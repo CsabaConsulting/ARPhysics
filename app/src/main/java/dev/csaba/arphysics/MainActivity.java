@@ -1,19 +1,20 @@
 package dev.csaba.arphysics;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.ar.core.Anchor;
 import com.google.ar.core.Frame;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
+import com.google.ar.core.Session;
 import com.google.ar.core.Trackable;
 import com.google.ar.core.TrackingState;
-import com.google.ar.sceneform.AnchorNode;
-import com.google.ar.sceneform.ArSceneView;
-import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.ar.core.exceptions.UnavailableApkTooOldException;
+import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException;
+import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException;
+import com.google.ar.core.exceptions.UnavailableSdkTooOldException;
 import com.google.ar.sceneform.ux.ArFragment;
-import com.google.ar.sceneform.ux.TransformableNode;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -38,9 +39,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = findViewById(R.id.fab);
-        // fab.setOnClickListener(view -> takePhoto());
 
         fragment = (ArFragment)
                 getSupportFragmentManager().findFragmentById(R.id.sceneform_fragment);
@@ -129,25 +127,36 @@ public class MainActivity extends AppCompatActivity {
         return new android.graphics.Point(vw.getWidth() / 2, vw.getHeight() / 2);
     }
 
+    private void buildTower() {
+        ;
+    }
+
+    private void hurdleBall() {
+        ;
+    }
+
     private void initializeGallery() {
         LinearLayout gallery = findViewById(R.id.gallery_layout);
 
         ImageView settings = new ImageView(this);
-        settings.setImageResource(R.drawable.settings);
+        settings.setImageResource(R.drawable.ic_settings);
         settings.setContentDescription("settings");
-        // andy.setOnClickListener(view ->{addObject(Uri.parse("andy_dance.sfb"));});
+        settings.setOnClickListener(view -> {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        });
         gallery.addView(settings);
 
         ImageView tower = new ImageView(this);
-        tower.setImageResource(R.drawable.pantheon);
+        tower.setImageResource(R.drawable.ic_pantheon);
         tower.setContentDescription("tower");
-        // cabin.setOnClickListener(view ->{addObject(Uri.parse("Cabin.sfb"));});
+        tower.setOnClickListener(view -> { buildTower(); });
         gallery.addView(tower);
 
         ImageView aim = new ImageView(this);
-        aim.setImageResource(R.drawable.aim);
+        aim.setImageResource(R.drawable.ic_aim);
         aim.setContentDescription("aim");
-        // house.setOnClickListener(view ->{addObject(Uri.parse("House.sfb"));});
+        aim.setOnClickListener(view -> { hurdleBall(); });
         gallery.addView(aim);
     }
 }
