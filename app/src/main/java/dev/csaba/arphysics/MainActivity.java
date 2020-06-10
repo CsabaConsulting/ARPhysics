@@ -11,13 +11,10 @@ import com.google.ar.core.Trackable;
 import com.google.ar.core.TrackingState;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.ArSceneView;
-import com.google.ar.sceneform.animation.ModelAnimator;
-import com.google.ar.sceneform.rendering.AnimationData;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -135,38 +132,22 @@ public class MainActivity extends AppCompatActivity {
     private void initializeGallery() {
         LinearLayout gallery = findViewById(R.id.gallery_layout);
 
-        ImageView andy = new ImageView(this);
-        andy.setImageResource(R.drawable.droid_thumb);
-        andy.setContentDescription("andy");
+        ImageView settings = new ImageView(this);
+        settings.setImageResource(R.drawable.settings);
+        settings.setContentDescription("settings");
         // andy.setOnClickListener(view ->{addObject(Uri.parse("andy_dance.sfb"));});
-        gallery.addView(andy);
+        gallery.addView(settings);
 
-        ImageView cabin = new ImageView(this);
-        cabin.setImageResource(R.drawable.cabin_thumb);
-        cabin.setContentDescription("cabin");
+        ImageView tower = new ImageView(this);
+        tower.setImageResource(R.drawable.pantheon);
+        tower.setContentDescription("tower");
         // cabin.setOnClickListener(view ->{addObject(Uri.parse("Cabin.sfb"));});
-        gallery.addView(cabin);
+        gallery.addView(tower);
 
-        ImageView house = new ImageView(this);
-        house.setImageResource(R.drawable.house_thumb);
-        house.setContentDescription("house");
+        ImageView aim = new ImageView(this);
+        aim.setImageResource(R.drawable.aim);
+        aim.setContentDescription("aim");
         // house.setOnClickListener(view ->{addObject(Uri.parse("House.sfb"));});
-        gallery.addView(house);
-
-        ImageView igloo = new ImageView(this);
-        igloo.setImageResource(R.drawable.igloo_thumb);
-        igloo.setContentDescription("igloo");
-        // igloo.setOnClickListener(view ->{addObject(Uri.parse("igloo.sfb"));});
-        gallery.addView(igloo);
-    }
-
-    public void togglePauseAndResume(ModelAnimator animator) {
-        if (animator.isPaused()) {
-            animator.resume();
-        } else if (animator.isStarted()) {
-            animator.pause();
-        } else {
-            animator.start();
-        }
+        gallery.addView(aim);
     }
 }
