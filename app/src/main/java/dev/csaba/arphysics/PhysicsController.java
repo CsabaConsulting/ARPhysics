@@ -76,10 +76,10 @@ public class PhysicsController {
     // Initialize Bullet Physics Engine
     DefaultCollisionConfiguration collisionConfiguration = new DefaultCollisionConfiguration();
     CollisionDispatcher dispatcher = new CollisionDispatcher(collisionConfiguration);
-    DbvtBroadphase broadphase = new DbvtBroadphase();
+    DbvtBroadphase broadPhase = new DbvtBroadphase();
     solver = new SequentialImpulseConstraintSolver();
 
-    dynamicsWorld = new DiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
+    dynamicsWorld = new DiscreteDynamicsWorld(dispatcher, broadPhase, solver, collisionConfiguration);
 
     // Override default gravity, which would be (0, -10, 0)
     // Because I want to manually control the gravity based on maze's Pose
