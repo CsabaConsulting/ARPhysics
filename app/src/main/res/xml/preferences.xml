@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".SettingsFragment">
 
+    <!--
     <DropDownPreference
         android:key="engine"
         android:title="@string/engine_type"
@@ -14,6 +15,7 @@
         android:entryValues="@array/engine_type_value"
         android:defaultValue="jbullet"
         android:icon="@drawable/ic_science"/>
+    -->
 
     <SeekBarPreference
         android:key="gravity"
