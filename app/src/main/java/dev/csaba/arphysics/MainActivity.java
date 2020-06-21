@@ -136,27 +136,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeGallery() {
-        LinearLayout gallery = findViewById(R.id.gallery_layout);
-
-        ImageView settings = new ImageView(this);
-        settings.setImageResource(R.drawable.ic_settings);
-        settings.setContentDescription("settings");
-        settings.setOnClickListener(view -> {
+        ImageView settingsIcon = findViewById(R.id.settingsIcon);
+        settingsIcon.setOnClickListener(view -> {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
         });
-        gallery.addView(settings);
 
-        ImageView tower = new ImageView(this);
-        tower.setImageResource(R.drawable.ic_pantheon);
-        tower.setContentDescription("tower");
-        tower.setOnClickListener(view -> { buildTower(); });
-        gallery.addView(tower);
+        ImageView pantheonIcon = findViewById(R.id.pantheonIcon);
+        pantheonIcon.setOnClickListener(view -> {
+            buildTower();
+        });
 
-        ImageView aim = new ImageView(this);
-        aim.setImageResource(R.drawable.ic_aim);
-        aim.setContentDescription("aim");
-        aim.setOnClickListener(view -> { hurdleBall(); });
-        gallery.addView(aim);
+        ImageView aimIcon = findViewById(R.id.aimIcon);
+        aimIcon.setOnClickListener(view -> {
+            hurdleBall();
+        });
     }
 }
