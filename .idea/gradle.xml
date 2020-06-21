@@ -12,6 +12,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/sceneformsrc/sceneform" />
+            <option value="$PROJECT_DIR$/sceneformux/ux" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
