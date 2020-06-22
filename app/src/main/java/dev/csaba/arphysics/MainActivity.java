@@ -30,6 +30,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.vecmath.Vector3f;
 
@@ -265,28 +266,33 @@ public class MainActivity extends AppCompatActivity {
             // startActivity(intent);
 
             ModelParameters modelParameters = getModelParameters();
-            String infoText = String.format("Gravity = %.2f m/s^2\n", modelParameters.getGravity());
-            infoText += String.format("Slab restitution = %.2f\n", modelParameters.getSlabRestitution());
-            infoText += String.format("Slab friction = %.2f\n", modelParameters.getSlabFriction());
-            infoText += String.format("Slab density = %.2f 10^3 kg/m^3\n", modelParameters.getSlabDensity());
-            infoText += String.format("Ball restitution = %.2f\n", modelParameters.getBallFriction());
-            infoText += String.format("Ball friction = %.2f\n", modelParameters.getBallFriction());
-            infoText += String.format("Ball density = %.2f 10^3 kg/m^3\n", modelParameters.getBallDensity());
+            String infoText = String.format(Locale.getDefault(),
+                    "Gravity = %.2f m/s^2\n", modelParameters.getGravity());
+            infoText += String.format(Locale.getDefault(),
+                    "Slab restitution = %.2f\n", modelParameters.getSlabRestitution());
+            infoText += String.format(Locale.getDefault(),
+                    "Slab friction = %.2f\n", modelParameters.getSlabFriction());
+            infoText += String.format(Locale.getDefault(),
+                    "Slab density = %.2f 10^3 kg/m^3\n", modelParameters.getSlabDensity());
+            infoText += String.format(Locale.getDefault(),
+                    "Ball restitution = %.2f\n", modelParameters.getBallFriction());
+            infoText += String.format(Locale.getDefault(),
+                    "Ball friction = %.2f\n", modelParameters.getBallFriction());
+            infoText += String.format(Locale.getDefault(),
+                    "Ball density = %.2f 10^3 kg/m^3\n", modelParameters.getBallDensity());
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.InfoDialogStyle);
-            builder.setMessage(infoText).setTitle("Model parameters").setPositiveButton("OK", null);
+            builder.setMessage(infoText)
+                    .setTitle("Model parameters")
+                    .setPositiveButton("OK", null);
             AlertDialog dialog = builder.create();
             dialog.show();
         });
 
         ImageView pantheonIcon = findViewById(R.id.pantheonIcon);
-        pantheonIcon.setOnClickListener(view -> {
-            addObject(false);
-        });
+        pantheonIcon.setOnClickListener(view -> addObject(false));
 
         ImageView aimIcon = findViewById(R.id.aimIcon);
-        aimIcon.setOnClickListener(view -> {
-            addObject(true);
-        });
+        aimIcon.setOnClickListener(view -> addObject(true));
     }
 }
