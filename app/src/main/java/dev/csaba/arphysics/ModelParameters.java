@@ -13,10 +13,12 @@ public class ModelParameters {
     private float height;
     private float depth;
     private float radius;
+    private float convexMargin;
 
     public ModelParameters(int numFloors, float gravity, float slabRestitution, float slabFriction,
                            float slabDensity, float ballRestitution, float ballFriction,
-                           float ballDensity, float width, float height, float depth, float radius)
+                           float ballDensity, float width, float height, float depth, float radius,
+                           float convexMargin)
     {
         this.numFloors = numFloors;
         this.gravity = gravity;
@@ -30,6 +32,7 @@ public class ModelParameters {
         this.height = height;
         this.depth = depth;
         this.radius = radius;
+        this.convexMargin = convexMargin;
     }
 
     public int getNumFloors() {
@@ -126,5 +129,13 @@ public class ModelParameters {
 
     public void setRadius(float radius) {
         this.radius = radius;
+    }
+
+    public float getConvexMargin() {
+        return convexMargin;
+    }
+
+    public void setConvexMargin(float convexMargin) {
+        this.convexMargin = convexMargin;
     }
 }

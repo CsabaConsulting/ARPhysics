@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private static final float HEIGHT = 0.05f;
     private static final float DEPTH = 0.01f;
     private static final float RADIUS = HEIGHT;
+    private static final float CONVEX_MARGIN = 0.0005f;
 
     private ArFragment fragment;
     private PointerDrawable pointer = new PointerDrawable();
@@ -71,7 +72,8 @@ public class MainActivity extends AppCompatActivity {
             WIDTH,
             HEIGHT,
             DEPTH,
-            RADIUS
+            RADIUS,
+            CONVEX_MARGIN
         );
     }
 
@@ -174,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
                     float displacement = (WIDTH - 2 * DEPTH) / 2 * j;
                     Vector3 pos = new Vector3(
                         even ? 0.0f : displacement,
-                        (HEIGHT + 0.005f) * i,
+                        CONVEX_MARGIN + (HEIGHT + 2 * CONVEX_MARGIN) * i,
                         even ? displacement : 0.0f
                     );
                     node.setLocalPosition(pos);
@@ -183,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                     physicsController.addSlabRigidBody(
                         index,
                         node,
-                        new Vector3f(box.x, box.y, box.z),
+                        new Vector3f(box.x / 2, box.y / 2, box.z / 2),
                         new Vector3f(pos.x, pos.y, pos.z)
                     );
                 }

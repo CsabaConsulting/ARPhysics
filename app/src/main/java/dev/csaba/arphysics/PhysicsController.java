@@ -69,6 +69,7 @@ public class PhysicsController {
     this.ballNode = ballNode;
     float r = modelParameters.getRadius();
     CollisionShape ballShape = new SphereShape(r);
+    ballShape.setMargin(modelParameters.getConvexMargin());
 
     Transform ballTransform = new Transform();
     ballTransform.setIdentity();
@@ -90,6 +91,7 @@ public class PhysicsController {
   public void addGroundPlane() {
     CollisionShape groundShape = new StaticPlaneShape(
       new Vector3f(0, 1.0f, 0), 0);
+    groundShape.setMargin(modelParameters.getConvexMargin());
 
     Transform groundTransform = new Transform();
     groundTransform.setIdentity();
@@ -106,6 +108,7 @@ public class PhysicsController {
   public void addSlabRigidBody(int index, Node slabNode, Vector3f slabBox, Vector3f slabPosition) {
     this.slabNodes[index] = slabNode;
     CollisionShape slabShape = new BoxShape(slabBox);
+    slabShape.setMargin(modelParameters.getConvexMargin());
 
     Transform slabTransform = new Transform();
     slabTransform.setIdentity();
