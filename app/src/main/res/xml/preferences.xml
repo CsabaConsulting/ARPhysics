@@ -8,69 +8,69 @@
 
     <!--
     <DropDownPreference
-        android:key="engine"
-        android:title="@string/engine_type"
-        android:summary="@string/engine_type_help"
-        android:entries="@array/engine_type_display"
-        android:entryValues="@array/engine_type_value"
-        android:defaultValue="jbullet"
-        android:icon="@drawable/ic_science"/>
+        app:key="engine"
+        app:title="@string/engine_type"
+        app:summary="@string/engine_type_help"
+        app:entries="@array/engine_type_display"
+        app:entryValues="@array/engine_type_value"
+        app:defaultValue="jbullet"
+        app:icon="@drawable/ic_science"/>
     -->
 
     <SeekBarPreference
-        android:key="gravity"
-        android:title="@string/gravity"
-        android:summary="@string/gravity_help"
+        app:key="gravity"
+        app:title="@string/gravity"
+        app:summary="@string/gravity_help"
         android:max="20"
-        android:defaultValue="10"
-        android:icon="@drawable/ic_gravity"/>
+        app:defaultValue="10"
+        app:icon="@drawable/ic_gravity"/>
 
     <SeekBarPreference
         app:key="slab_restitution"
         app:title="@string/slab_restitution"
         app:summary="@string/restitution_help"
-        android:max="1"
-        android:defaultValue="0.5"
-        android:icon="@drawable/ic_box_glove"/>
+        android:max="100"
+        app:defaultValue="50"
+        app:icon="@drawable/ic_box_glove"/>
 
     <SeekBarPreference
         app:key="slab_friction"
         app:title="@string/slab_friction"
         app:summary="@string/friction_help"
-        android:max="1"
-        android:defaultValue="0.5"
-        android:icon="@drawable/ic_friction"/>
+        android:max="100"
+        app:defaultValue="50"
+        app:icon="@drawable/ic_friction"/>
 
     <SeekBarPreference
         app:key="slab_density"
         app:title="@string/slab_density"
         app:summary="@string/slab_density_help"
-        android:max="1"
-        android:defaultValue="0.5"
-        android:icon="@drawable/ic_weight"/>
+        android:max="100"
+        app:defaultValue="50"
+        app:icon="@drawable/ic_weight"/>
 
     <SeekBarPreference
         app:key="ball_restitution"
         app:title="@string/ball_restitution"
         app:summary="@string/restitution_help"
-        android:max="1"
-        android:defaultValue="0.95"
-        android:icon="@drawable/ic_box_glove"/>
+        android:max="100"
+        app:defaultValue="95"
+        app:icon="@drawable/ic_box_glove"/>
 
     <SeekBarPreference
         app:key="ball_friction"
         app:title="@string/ball_friction"
         app:summary="@string/friction_help"
-        android:max="1"
-        android:defaultValue="0.1"
-        android:icon="@drawable/ic_friction"/>
+        android:max="100"
+        app:defaultValue="10"
+        app:icon="@drawable/ic_friction"/>
 
     <SeekBarPreference
         app:key="ball_density"
         app:title="@string/ball_density"
         app:summary="@string/ball_density_help"
-        android:max="22"
-        android:defaultValue="7.9"
-        android:icon="@drawable/ic_weight"/>
+        android:max="230"
+        app:defaultValue="79"
+        app:icon="@drawable/ic_weight"/>
 
 </PreferenceScreen>

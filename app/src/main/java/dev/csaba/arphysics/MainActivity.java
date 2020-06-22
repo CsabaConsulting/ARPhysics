@@ -1,6 +1,6 @@
 package dev.csaba.arphysics;
 
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import com.google.ar.core.Anchor;
@@ -20,7 +20,9 @@ import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.ShapeFactory;
 import com.google.ar.sceneform.ux.ArFragment;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import android.view.View;
 import android.widget.ImageView;
@@ -34,6 +36,29 @@ public class MainActivity extends AppCompatActivity {
     private PointerDrawable pointer = new PointerDrawable();
     private boolean isTracking;
     private boolean isHitting;
+
+    ModelParameters getModelParameters() {
+        SharedPreferences preferences =
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        int gravityInt = preferences.getInt("gravity", 100);
+        int slabRestitutionInt = preferences.getInt("slab_restitution", 50);
+        int slabFrictionInt = preferences.getInt("slab_friction", 50);
+        int slabDensityInt = preferences.getInt("slab_density", 50);
+        int ballRestitutionInt = preferences.getInt("ball_restitution", 50);
+        int ballFrictionInt = preferences.getInt("ball_friction", 50);
+        int ballDensityInt = preferences.getInt("ball_density", 50);
+
+        return new ModelParameters(
+            gravityInt / 10.0f,
+            slabRestitutionInt / 100.0f,
+            slabFrictionInt / 100.0f,
+            slabDensityInt / 100.0f,
+            ballRestitutionInt / 100.0f,
+            ballFrictionInt / 100.0f,
+            ballDensityInt / 100.0f
+        );
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,8 +189,22 @@ public class MainActivity extends AppCompatActivity {
     private void initializeGallery() {
         ImageView settingsIcon = findViewById(R.id.settingsIcon);
         settingsIcon.setOnClickListener(view -> {
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
+            // Intent intent = new Intent(this, SettingsActivity.class);
+            // startActivity(intent);
+
+            ModelParameters modelParameters = getModelParameters();
+            String infoText = String.format("Gravity = %.2f m/s^2\n", modelParameters.getGravity());
+            infoText += String.format("Slab restitution = %.2f\n", modelParameters.getSlabRestitution());
+            infoText += String.format("Slab friction = %.2f\n", modelParameters.getSlabFriction());
+            infoText += String.format("Slab density = %.2f 10^3 kg/m^3\n", modelParameters.getSlabDensity());
+            infoText += String.format("Ball restitution = %.2f\n", modelParameters.getBallFriction());
+            infoText += String.format("Ball friction = %.2f\n", modelParameters.getBallFriction());
+            infoText += String.format("Ball density = %.2f 10^3 kg/m^3\n", modelParameters.getBallDensity());
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.InfoDialogStyle);
+            builder.setMessage(infoText).setTitle("Model parameters").setPositiveButton("OK", null);
+            AlertDialog dialog = builder.create();
+            dialog.show();
         });
 
         ImageView pantheonIcon = findViewById(R.id.pantheonIcon);

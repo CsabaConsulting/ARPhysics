@@ -6,15 +6,15 @@
     <string name="gravity">Gravity</string>
     <string name="gravity_help">Gravity measured in m/s^2</string>
     <string name="slab_restitution">Restitution of the wooden slabs</string>
-    <string name="restitution_help">How bouncy the object is: 1.0 implies perfect elasticity, 0.0 implies complete rigidity</string>
+    <string name="restitution_help">How bouncy the object is: 1.0 (100) implies perfect elasticity, 0.0 implies complete rigidity</string>
     <string name="slab_friction">Friction of the wooden slabs</string>
-    <string name="friction_help">Force of resistance of an object when moving across another: 0.0 implies no friction, 1.0 implies high friction</string>
+    <string name="friction_help">Force of resistance of an object when moving across another: 0.0 implies no friction, 1.0 (100) implies high friction</string>
     <string name="slab_density">Density of the wooden slabs</string>
-    <string name="slab_density_help">Density measured in (10^3 kg/m^3). Varies mostly within 0.3 – 0.8 (Balsa 0.16, Teak 0.9)</string>
+    <string name="slab_density_help">Density measured in (10^3 kg/m^3). Varies mostly within 0.3 (30) – 0.8 (80) (Balsa 0.16, Teak 0.9)</string>
     <string name="ball_restitution">Restitution of the metal ball</string>
     <string name="ball_friction">Friction of the metal ball</string>
     <string name="ball_density">Density of the wooden slabs</string>
-    <string name="ball_density_help">Density measured in (10^3 kg/m^3). Aluminium 2.6, Titanium 4.5, Iron 7.9, Lead 11.3, Platinum 21.5</string>
+    <string name="ball_density_help">Density measured in (10^3 kg/m^3). Aluminium 2.6 (26), Titanium 4.5 (45), Iron 7.9 (79), Lead 11.3 (113), Platinum 21.5 (215)</string>
     <string name="pantheon_icon">Wooden slab structure</string>
     <string name="aim_icon">Metal ball hurdle</string>
 </resources>
