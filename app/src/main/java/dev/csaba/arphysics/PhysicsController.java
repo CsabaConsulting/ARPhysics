@@ -1,6 +1,5 @@
 package dev.csaba.arphysics;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.bulletphysics.collision.broadphase.DbvtBroadphase;
@@ -9,7 +8,6 @@ import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
 import com.bulletphysics.collision.shapes.BoxShape;
 import com.bulletphysics.collision.shapes.CollisionShape;
-import com.bulletphysics.collision.shapes.IndexedMesh;
 import com.bulletphysics.collision.shapes.SphereShape;
 import com.bulletphysics.collision.shapes.StaticPlaneShape;
 import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
@@ -42,10 +40,8 @@ public class PhysicsController {
   private RigidBody[] slabRBs;
   private Node[] slabNodes;
   private long previous_time;
-  private Context context;
 
-  public PhysicsController(Context activity, ModelParameters modelParameters) {
-    context = activity;
+  public PhysicsController(ModelParameters modelParameters) {
     this.modelParameters = modelParameters;
     initialize();
   }
@@ -167,7 +163,7 @@ public class PhysicsController {
       }
     }
 
-    // printDebugInfo();
+    printDebugInfo();
   }
 
   private void printDebugInfo() {
