@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
                         float displacement = (WIDTH - 2 * DEPTH) / 2 * j;
                         Vector3 pos = new Vector3(
                             even ? 0.0f : displacement,
-                            HEIGHT * iLambda,
+                                (HEIGHT + 0.005f) * iLambda,
                             even ? displacement : 0.0f
                         );
                         node.setLocalPosition(pos);
