@@ -18,6 +18,19 @@
         app:layout_constraintVertical_chainStyle="spread"
         app:layout_constraintVertical_weight="9"/>
 
+    <ImageView
+        android:id="@+id/cross_hair"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:scaleType="fitCenter"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/gallery_layout"
+        app:layout_constraintVertical_chainStyle="spread"
+        android:src="@drawable/crosshairs"
+        android:contentDescription="@string/corsshairs"
+        />
+
     <LinearLayout
         android:id="@+id/gallery_layout"
         android:layout_width="match_parent"

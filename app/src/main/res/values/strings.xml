@@ -17,4 +17,5 @@
     <string name="ball_density_help">Density measured in (10^3 kg/m^3). Aluminium 2.6 (26), Titanium 4.5 (45), Iron 7.9 (79), Lead 11.3 (113), Platinum 21.5 (215)</string>
     <string name="pantheon_icon">Wooden slab structure</string>
     <string name="aim_icon">Metal ball hurdle</string>
+    <string name="corsshairs">Cross hair to aim</string>
 </resources>
