@@ -43,8 +43,6 @@ public class PhysicsController {
   private Node[] slabNodes;
   private long previous_time;
   private Context context;
-  private final float MAZE_SCALE = 0.02f;
-  private final float MAZE_SCALE_Y_EXTRA = 0.1f;
 
   public PhysicsController(Context activity, ModelParameters modelParameters) {
     context = activity;
@@ -78,7 +76,7 @@ public class PhysicsController {
 
     Transform ballTransform = new Transform();
     ballTransform.setIdentity();
-    ballTransform.origin.set(ballPosition); // Slightly raise the ball at the beginning
+    ballTransform.origin.set(ballPosition);
 
     DefaultMotionState ballMotionState = new DefaultMotionState(ballTransform);
     float mass = (float)(modelParameters.getBallDensity() * 1000 * 4 / 3 * Math.PI * r * r * r);
@@ -95,8 +93,7 @@ public class PhysicsController {
 
   public void addGroundPlane() {
     CollisionShape groundShape = new StaticPlaneShape(
-      new Vector3f(0, 1.0f, 0),
-        0);
+      new Vector3f(0, 1.0f, 0), 0);
 
     Transform groundTransform = new Transform();
     groundTransform.setIdentity();
@@ -104,7 +101,7 @@ public class PhysicsController {
 
     DefaultMotionState groundMotionState = new DefaultMotionState(groundTransform);
     RigidBodyConstructionInfo groundRBInfo = new RigidBodyConstructionInfo(
-            0.0f, groundMotionState, groundShape, new Vector3f(0, 0, 0));
+        0.0f, groundMotionState, groundShape, new Vector3f(0, 0, 0));
     groundRBInfo.friction = 0.6f;
     RigidBody groundRB = new RigidBody(groundRBInfo);
     dynamicsWorld.addRigidBody(groundRB);
@@ -112,17 +109,16 @@ public class PhysicsController {
 
   public void addSlabRigidBody(int index, Node slabNode, Vector3f slabBox, Vector3f slabPosition) {
     this.slabNodes[index] = slabNode;
-    float r = modelParameters.getRadius();
     CollisionShape slabShape = new BoxShape(slabBox);
 
     Transform slabTransform = new Transform();
     slabTransform.setIdentity();
-    slabTransform.origin.set(slabPosition); // Slightly raise the ball at the beginning
+    slabTransform.origin.set(slabPosition);
 
     DefaultMotionState slabMotionState = new DefaultMotionState(slabTransform);
     float mass = modelParameters.getSlabDensity() * 1000 * slabBox.x * slabBox.y * slabBox.z;
     RigidBodyConstructionInfo slabRBInfo = new RigidBodyConstructionInfo(
-            mass, slabMotionState, slabShape, new Vector3f(0, 0, 0));
+        mass, slabMotionState, slabShape, new Vector3f(0, 0, 0));
     slabRBInfo.restitution = modelParameters.getBallRestitution();
     slabRBInfo.friction = modelParameters.getBallFriction();
 
@@ -133,12 +129,43 @@ public class PhysicsController {
     dynamicsWorld.addRigidBody(slabRB);
   }
 
+  public Pose getElementPose(RigidBody rigidBody) {
+    Transform ballTransform = new Transform();
+    rigidBody.getMotionState().getWorldTransform(ballTransform);
+
+    Quat4f rot = new Quat4f();
+    ballTransform.getRotation(rot);
+
+    float[] translation = {ballTransform.origin.x, ballTransform.origin.y, ballTransform.origin.z};
+    float[] rotation = {rot.x, rot.y, rot.z, rot.w};
+
+    return new Pose(translation, rotation);
+  }
+
   public void updatePhysics() {
     long current_time = java.lang.System.currentTimeMillis();
 
     // stepSimulation takes deltaTime in the unit of seconds
     dynamicsWorld.stepSimulation((current_time - previous_time) / 1000.0f);
     previous_time = current_time;
+
+    // Update the ball
+    if (ballNode != null) {
+      Pose pose = getElementPose(ballRB);
+      ballNode.setLocalPosition(new Vector3(pose.tx(), pose.ty(), pose.tz()));
+      ballNode.setLocalRotation(new Quaternion(pose.qx(), pose.qy(), pose.qz(), pose.qw()));
+    }
+
+    // Update the slabs
+    int slabCount = slabRBs.length;
+    for (int index = 0; index < slabCount; index++) {
+      Node slabNode = slabNodes[index];
+      if (slabNode != null) {
+        Pose pose = getElementPose(slabRBs[index]);
+        slabNode.setLocalPosition(new Vector3(pose.tx(), pose.ty(), pose.tz()));
+        slabNode.setLocalRotation(new Quaternion(pose.qx(), pose.qy(), pose.qz(), pose.qw()));
+      }
+    }
 
     // printDebugInfo();
   }
@@ -165,25 +192,6 @@ public class PhysicsController {
               j, state,
               worldTransform.origin.x, worldTransform.origin.y, worldTransform.origin.z));
     }
-  }
-
-  // Get the pose on Ball, in Maze's coordinate space
-  // - With centered the vertices in Maze, (0, 0, 0) is the center of the maze
-  // - Though we scaled maze in physics simulation, the Pose returned here is not scaled.
-  public Pose getBallPose() {
-    Transform ballTransform = new Transform();
-    ballRB.getMotionState().getWorldTransform(ballTransform);
-
-    Quat4f rot = new Quat4f();
-    ballTransform.getRotation(rot);
-
-    // Use MAZE_SCALE to convert size from physical world size to Maze's original size
-    // Because in display size, Sceneform is actually dealing with original size of Maze
-    float translation[] = {ballTransform.origin.x / MAZE_SCALE, ballTransform.origin.y / MAZE_SCALE, ballTransform.origin.z/ MAZE_SCALE};
-    float rotation[] = {rot.x, rot.y, rot.z, rot.w};
-
-    Pose ballPose = new Pose(translation, rotation);
-    return ballPose;
   }
 
   public void applyGravityToBall(Vector3f gravity) {
