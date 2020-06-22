@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.bulletphysics.collision.broadphase.DbvtBroadphase;
 import com.bulletphysics.collision.dispatch.CollisionDispatcher;
+import com.bulletphysics.collision.dispatch.CollisionFlags;
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
 import com.bulletphysics.collision.shapes.BoxShape;
@@ -25,7 +26,9 @@ import com.google.ar.sceneform.math.Vector3;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
+import static com.bulletphysics.collision.dispatch.CollisionObject.ACTIVE_TAG;
 import static com.bulletphysics.collision.dispatch.CollisionObject.DISABLE_DEACTIVATION;
+import static com.bulletphysics.collision.dispatch.CollisionObject.ISLAND_SLEEPING;
 
 
 public class PhysicsController {
@@ -83,7 +86,16 @@ public class PhysicsController {
     ballRBInfo.friction = modelParameters.getBallFriction();
 
     ballRB = new RigidBody(ballRBInfo);
+    ballRB.setCollisionFlags(CollisionFlags.KINEMATIC_OBJECT);
     ballRB.setActivationState(DISABLE_DEACTIVATION);
+
+    int slabCount = slabRBs.length;
+    for (int index = 0; index < slabCount; index++) {
+      Node slabNode = slabNodes[index];
+      if (slabNode != null) {
+        slabRBs[index].setActivationState(DISABLE_DEACTIVATION);
+      }
+    }
 
     dynamicsWorld.addRigidBody(ballRB);
   }
@@ -122,7 +134,8 @@ public class PhysicsController {
     slabRBInfo.friction = modelParameters.getBallFriction();
 
     RigidBody slabRB = new RigidBody(slabRBInfo);
-    slabRB.setActivationState(DISABLE_DEACTIVATION);
+    slabRB.setCollisionFlags(CollisionFlags.KINEMATIC_OBJECT);
+    slabRB.setActivationState(ISLAND_SLEEPING);
     slabRBs[index] = slabRB;
 
     dynamicsWorld.addRigidBody(slabRB);
