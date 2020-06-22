@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
             MaterialFactory.makeOpaqueWithColor(this, brown)
                     .thenAccept(material -> {
                 boolean evenStory = iLambda % 2 == 0;
-                for (int j = -1; j < 1; j += 2) {
+                for (int j = -1; j <= 1; j += 2) {
                     ModelRenderable renderable = ShapeFactory.makeCube(
                         new Vector3(evenStory ? 0.2f : 0.01f, 0.05f, evenStory ? 0.01f: 0.2f),
                         new Vector3(0.0f, 0.0f, 0.0f),
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                     Node node = new Node();  // TODO: PhysicsNode?
                     node.setParent(anchorNode);
                     node.setRenderable(renderable);
-                    float displacement = 0.19f * j;
+                    float displacement = (0.2f - 2 * 0.01f) / 2 * j;
                     Vector3 pos = new Vector3(
                         evenStory ? 0.0f : displacement,
                         0.05f * iLambda,
