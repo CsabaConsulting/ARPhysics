@@ -52,12 +52,12 @@ public class MainActivity extends AppCompatActivity {
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         int gravityInt = preferences.getInt("gravity", 100);
-        int slabRestitutionInt = preferences.getInt("slab_restitution", 50);
+        int slabRestitutionInt = preferences.getInt("slab_restitution", 0);
         int slabFrictionInt = preferences.getInt("slab_friction", 50);
         int slabDensityInt = preferences.getInt("slab_density", 50);
-        int ballRestitutionInt = preferences.getInt("ball_restitution", 50);
+        int ballRestitutionInt = preferences.getInt("ball_restitution", 0);
         int ballFrictionInt = preferences.getInt("ball_friction", 50);
-        int ballDensityInt = preferences.getInt("ball_density", 50);
+        int ballDensityInt = preferences.getInt("ball_density", 80);
 
         return new ModelParameters(
             NUM_FLOORS,
