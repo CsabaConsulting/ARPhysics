@@ -20,4 +20,6 @@
     <string name="corsshairs">Cross hair to aim</string>
     <string name="step123_title">Step 1 2 3</string>
     <string name="step123_details">Place a structure first and only after then you can hurdle a ball. Use the icons below.</string>
+    <string name="step1">Step 1</string>
+    <string name="step2">Step 2</string>
 </resources>
