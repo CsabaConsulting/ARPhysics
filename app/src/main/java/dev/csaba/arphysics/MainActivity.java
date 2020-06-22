@@ -96,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
 
         if (physicsController != null) {
             physicsController.updatePhysics();
-            // TODO update node (slabs and ball) poses
         }
 
         View contentView = findViewById(android.R.id.content);
@@ -195,7 +194,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void hurdleBall(Vector3 hurdle, Vector3 cameraLook, ArSceneView arSceneView, Anchor anchor) {
         if (physicsController == null) {
-            return;
+            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.WarningDialogStyle);
+            builder.setMessage(getString(R.string.step123_details))
+                .setTitle(getString(R.string.step123_title))
+                .setPositiveButton("OK", null);
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
 
         AnchorNode anchorNode = new AnchorNode(anchor);
