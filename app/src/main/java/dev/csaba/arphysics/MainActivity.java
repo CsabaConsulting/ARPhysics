@@ -156,40 +156,39 @@ public class MainActivity extends AppCompatActivity {
         anchorNode.setParent(scene);
 
         Color slabColor = new Color(0xFF593C1F);  // Brown RGB: 89, 60, 31
-        for (int i = 0; i < NUM_FLOORS; i++) {
-            final int iLambda = i;
-            MaterialFactory.makeOpaqueWithColor(this, slabColor)
+        MaterialFactory.makeOpaqueWithColor(this, slabColor)
                 .thenAccept(material -> {
-                    boolean even = iLambda % 2 == 0;
-                    for (int j = -1; j <= 1; j += 2) {
-                        Vector3 box = new Vector3(even ? WIDTH : DEPTH, HEIGHT, even ? DEPTH: WIDTH);
-                        ModelRenderable renderable = ShapeFactory.makeCube(
-                            box,
-                            new Vector3(0.0f, 0.0f, 0.0f),
-                            material
-                        );
+            for (int i = 0; i < NUM_FLOORS; i++) {
+                boolean even = i % 2 == 0;
+                for (int j = -1; j <= 1; j += 2) {
+                    Vector3 box = new Vector3(even ? WIDTH : DEPTH, HEIGHT, even ? DEPTH: WIDTH);
+                    ModelRenderable renderable = ShapeFactory.makeCube(
+                        box,
+                        new Vector3(0.0f, 0.0f, 0.0f),
+                        material
+                    );
 
-                        Node node = new Node();
-                        node.setParent(anchorNode);
-                        node.setRenderable(renderable);
-                        float displacement = (WIDTH - 2 * DEPTH) / 2 * j;
-                        Vector3 pos = new Vector3(
-                            even ? 0.0f : displacement,
-                                (HEIGHT + 0.005f) * iLambda,
-                            even ? displacement : 0.0f
-                        );
-                        node.setLocalPosition(pos);
+                    Node node = new Node();
+                    node.setParent(anchorNode);
+                    node.setRenderable(renderable);
+                    float displacement = (WIDTH - 2 * DEPTH) / 2 * j;
+                    Vector3 pos = new Vector3(
+                        even ? 0.0f : displacement,
+                        (HEIGHT + 0.005f) * i,
+                        even ? displacement : 0.0f
+                    );
+                    node.setLocalPosition(pos);
 
-                        int index = iLambda * 2 + (j < 0 ? 0 : 1);
-                        physicsController.addSlabRigidBody(
-                            index,
-                            node,
-                            new Vector3f(box.x, box.y, box.z),
-                            new Vector3f(pos.x, pos.y, pos.z)
-                        );
-                    }
-                });
-        }
+                    int index = i * 2 + (j < 0 ? 0 : 1);
+                    physicsController.addSlabRigidBody(
+                        index,
+                        node,
+                        new Vector3f(box.x, box.y, box.z),
+                        new Vector3f(pos.x, pos.y, pos.z)
+                    );
+                }
+            }
+        });
     }
 
     private void hurdleBall(Vector3 hurdle, Vector3 cameraLook, ArSceneView arSceneView, Anchor anchor) {
@@ -248,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
                         Vector3 look = camera.getForward();
                         hurdleBall(look, look, arSceneView, hitAnchor);
                     } else {
-                        physicsController = new PhysicsController(this, getModelParameters());
+                        physicsController = new PhysicsController(getModelParameters());
                         buildTower(arSceneView, hitAnchor);
                     }
                     break;
