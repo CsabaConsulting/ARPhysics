@@ -34,7 +34,7 @@ import java.util.List;
 import javax.vecmath.Vector3f;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int NUM_FLOORS = 15;
+    private static final int NUM_FLOORS = 10;
     private static final float WIDTH = 0.2f;
     private static final float HEIGHT = 0.05f;
     private static final float DEPTH = 0.01f;
@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
                         );
                         node.setLocalPosition(pos);
 
-                        int index = iLambda + (j < 0 ? 0 : 1);
+                        int index = iLambda * 2 + (j < 0 ? 0 : 1);
                         physicsController.addSlabRigidBody(
                             index,
                             node,
