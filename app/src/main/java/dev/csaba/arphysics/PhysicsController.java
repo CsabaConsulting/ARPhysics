@@ -193,8 +193,4 @@ public class PhysicsController {
               worldTransform.origin.x, worldTransform.origin.y, worldTransform.origin.z));
     }
   }
-
-  public void applyGravityToBall(Vector3f gravity) {
-    ballRB.applyCentralForce(gravity);
-  }
 }
