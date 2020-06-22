@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int NUM_FLOORS = 10;
     private static final float WIDTH = 0.2f;
     private static final float HEIGHT = 0.05f;
-    private static final float DEPTH = 0.01f;
+    private static final float DEPTH = 0.025f;
     private static final float RADIUS = HEIGHT;
     private static final float CONVEX_MARGIN = 0.0005f;
 
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
                     float displacement = (WIDTH - 2 * DEPTH) / 2 * j;
                     Vector3 pos = new Vector3(
                         even ? 0.0f : displacement,
-                        CONVEX_MARGIN + (HEIGHT + 2 * CONVEX_MARGIN) * i,
+                        CONVEX_MARGIN + (HEIGHT + /* 2 * */ CONVEX_MARGIN) * i,
                         even ? displacement : 0.0f
                     );
                     node.setLocalPosition(pos);
@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
             });
     }
 
-    private void addObject(boolean isHurdle) {
+    private void addObject(boolean isHurdle, ImageView iconButton) {
         ArSceneView arSceneView = fragment.getArSceneView();
         Frame frame = fragment.getArSceneView().getArFrame();
         android.graphics.Point pt = getScreenCenter();
@@ -251,6 +251,7 @@ public class MainActivity extends AppCompatActivity {
                         hurdleBall(look, look, arSceneView, hitAnchor);
                     } else {
                         physicsController = new PhysicsController(getModelParameters());
+                        iconButton.setEnabled(false);
                         buildTower(arSceneView, hitAnchor);
                     }
                     break;
@@ -290,9 +291,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         ImageView pantheonIcon = findViewById(R.id.pantheonIcon);
-        pantheonIcon.setOnClickListener(view -> addObject(false));
+        pantheonIcon.setOnClickListener(view -> addObject(false, pantheonIcon));
 
         ImageView aimIcon = findViewById(R.id.aimIcon);
-        aimIcon.setOnClickListener(view -> addObject(true));
+        aimIcon.setOnClickListener(view -> addObject(true, null));
     }
 }
