@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                             material
                         );
 
-                        Node node = new Node();  // TODO: PhysicsNode?
+                        Node node = new Node();
                         node.setParent(anchorNode);
                         node.setRenderable(renderable);
                         float displacement = (WIDTH - 2 * DEPTH) / 2 * j;
