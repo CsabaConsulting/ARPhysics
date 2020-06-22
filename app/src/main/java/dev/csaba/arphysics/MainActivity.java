@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
         Scene scene = arSceneView.getScene();
         anchorNode.setParent(scene);
 
-        Color slabColor = new Color(89, 60, 31);  // Brown
+        Color slabColor = new Color(0xFF593C1F);  // Brown RGB: 89, 60, 31
         for (int i = 0; i < NUM_FLOORS; i++) {
             final int iLambda = i;
             MaterialFactory.makeOpaqueWithColor(this, slabColor)
@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
         Scene scene = arSceneView.getScene();
         anchorNode.setParent(scene);
 
-        Color ballColor = new Color(89, 60, 31);  // Brown
+        Color ballColor = new Color(android.graphics.Color.RED);
         MaterialFactory.makeOpaqueWithColor(this, ballColor)
             .thenAccept(material -> {
                 ModelRenderable renderable = ShapeFactory.makeSphere(
