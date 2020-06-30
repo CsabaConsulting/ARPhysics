@@ -118,12 +118,29 @@ public class PhysicsController {
 
   public void addSlabRigidBody(int index, Node slabNode, Vector3f slabBox, Vector3f slabPosition) {
     this.slabNodes[index] = slabNode;
-    CollisionShape slabShape = new BoxShape(slabBox);
-    slabShape.setMargin(modelParameters.getConvexMargin());
+    float margin = modelParameters.getConvexMargin();
+    float doubleMargin = margin * 2;
+    // We need to shrink the box with the margin, so
+    // the slabs would touch and would not float on each other.
+    // This has to be reversed in updatePhysics.
+    Vector3f compensatedSlabBox = new Vector3f(
+      slabBox.x - doubleMargin,
+      slabBox.y - doubleMargin,
+      slabBox.z - doubleMargin
+    );
+    CollisionShape slabShape = new BoxShape(compensatedSlabBox);
+    slabShape.setMargin(margin);
 
     Transform slabTransform = new Transform();
     slabTransform.setIdentity();
-    slabTransform.origin.set(slabPosition);
+    // We need to compensate the position due to the SlabBox shrink.
+    // This has to be reversed in updatePhysics.
+    Vector3f compensatedSlabPosition = new Vector3f(
+      slabPosition.x + margin,
+      slabPosition.y + margin,
+      slabPosition.z + margin
+    );
+    slabTransform.origin.set(compensatedSlabPosition);
 
     DefaultMotionState slabMotionState = new DefaultMotionState(slabTransform);
     float mass = modelParameters.getSlabDensity() * 1000 * slabBox.x * slabBox.y * slabBox.z;
@@ -147,10 +164,16 @@ public class PhysicsController {
     Quat4f rot = new Quat4f();
     ballTransform.getRotation(rot);
 
+    float margin = modelParameters.getConvexMargin();
+    // Reverse the margin compensation.
+    // A rudimentary version doesn't account for the rotation,
+    // so it could miscalculate by sqrt(2)-1 (0.414213562) x margin.
+    // Since the margin is already small this might not be much visible.
+    // Otherwise we'll have to calculate the proper geometry based on the rotation.
     float[] translation = {
-      ballTransform.origin.x,
-      ballTransform.origin.y,
-      ballTransform.origin.z
+      ballTransform.origin.x - margin,
+      ballTransform.origin.y - margin,
+      ballTransform.origin.z - margin
     };
     float[] rotation = {
       rot.x,
