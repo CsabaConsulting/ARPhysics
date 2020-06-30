@@ -65,7 +65,6 @@ public class PhysicsController {
 
     slabRBs = new RigidBody[modelParameters.getNumFloors() * 2];
     slabNodes = new Node[modelParameters.getNumFloors() * 2];
-    previous_time = java.lang.System.currentTimeMillis();
   }
 
   public void addBallRigidBody(Node ballNode, Vector3f ballPosition, Vector3f inertia) {
@@ -89,15 +88,16 @@ public class PhysicsController {
     ballRB.setCollisionFlags(CollisionFlags.KINEMATIC_OBJECT);
     ballRB.setActivationState(DISABLE_DEACTIVATION);
 
-    int slabCount = slabRBs.length;
-    for (int index = 0; index < slabCount; index++) {
-      Node slabNode = slabNodes[index];
-      if (slabNode != null) {
-        slabRBs[index].setActivationState(DISABLE_DEACTIVATION);
-      }
-    }
+    // int slabCount = slabRBs.length;
+    // for (int index = 0; index < slabCount; index++) {
+    //   Node slabNode = slabNodes[index];
+    //   if (slabNode != null) {
+    //     slabRBs[index].setActivationState(DISABLE_DEACTIVATION);
+    //   }
+    // }
 
     dynamicsWorld.addRigidBody(ballRB);
+    previous_time = java.lang.System.currentTimeMillis();
   }
 
   public void addGroundPlane() {
@@ -135,7 +135,7 @@ public class PhysicsController {
 
     RigidBody slabRB = new RigidBody(slabRBInfo);
     slabRB.setCollisionFlags(CollisionFlags.KINEMATIC_OBJECT);
-    slabRB.setActivationState(ISLAND_SLEEPING);
+    slabRB.setActivationState(DISABLE_DEACTIVATION);
     slabRBs[index] = slabRB;
 
     dynamicsWorld.addRigidBody(slabRB);
@@ -148,13 +148,25 @@ public class PhysicsController {
     Quat4f rot = new Quat4f();
     ballTransform.getRotation(rot);
 
-    float[] translation = {ballTransform.origin.x, ballTransform.origin.y, ballTransform.origin.z};
-    float[] rotation = {rot.x, rot.y, rot.z, rot.w};
+    float[] translation = {
+      ballTransform.origin.x,
+      ballTransform.origin.y,
+      ballTransform.origin.z
+    };
+    float[] rotation = {
+      rot.x,
+      rot.y,
+      rot.z,
+      rot.w
+    };
 
     return new Pose(translation, rotation);
   }
 
   public void updatePhysics() {
+    if (previous_time <= 0) {
+      return;
+    }
     long current_time = java.lang.System.currentTimeMillis();
 
     // stepSimulation takes deltaTime in the unit of seconds
