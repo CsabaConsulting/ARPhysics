@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private static final float HEIGHT = 0.05f;
     private static final float DEPTH = 0.025f;
     private static final float RADIUS = HEIGHT;
-    private static final float CONVEX_MARGIN = 0.0005f;
+    private static final float CONVEX_MARGIN = 0.0025f;
 
     private ArFragment fragment;
     private PointerDrawable pointer = new PointerDrawable();
