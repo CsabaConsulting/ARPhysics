@@ -71,7 +71,6 @@ public class PhysicsController {
     this.ballNode = ballNode;
     float r = modelParameters.getRadius();
     CollisionShape ballShape = new SphereShape(r);
-    ballShape.setMargin(modelParameters.getConvexMargin());
 
     Transform ballTransform = new Transform();
     ballTransform.setIdentity();
