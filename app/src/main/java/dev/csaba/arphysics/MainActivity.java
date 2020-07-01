@@ -8,6 +8,7 @@ import com.google.ar.core.Frame;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.core.Pose;
+import com.google.ar.core.Session;
 import com.google.ar.core.Trackable;
 import com.google.ar.core.TrackingState;
 import com.google.ar.sceneform.AnchorNode;
@@ -15,6 +16,7 @@ import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Camera;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
+import com.google.ar.sceneform.collision.Ray;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.MaterialFactory;
@@ -194,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void hurdleBall(Vector3 hurdle, Vector3 cameraLook, ArSceneView arSceneView, Anchor anchor) {
+    private void hurdleBall(Vector3 hurdleVector, Vector3 cameraPosition, ArSceneView arSceneView, Anchor anchor) {
         if (physicsController == null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.WarningDialogStyle);
             builder.setMessage(getString(R.string.step123_details))
@@ -213,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
             .thenAccept(material -> {
                 ModelRenderable renderable = ShapeFactory.makeSphere(
                         RADIUS,
-                        cameraLook,
+                        cameraPosition,
                         material
                 );
 
@@ -225,8 +227,8 @@ public class MainActivity extends AppCompatActivity {
                 // The camera look direction is the hurdle inertia, maybe scaling needed
                 physicsController.addBallRigidBody(
                     node,
-                    new Vector3f(hurdle.x, hurdle.y, hurdle.z),
-                    new Vector3f(hurdle.x, hurdle.y, hurdle.z)
+                    new Vector3f(cameraPosition.x, cameraPosition.y, cameraPosition.z),
+                    new Vector3f(hurdleVector.x, hurdleVector.y, hurdleVector.z)
                 );
             });
     }
@@ -235,21 +237,27 @@ public class MainActivity extends AppCompatActivity {
         ArSceneView arSceneView = fragment.getArSceneView();
         Frame frame = fragment.getArSceneView().getArFrame();
         android.graphics.Point pt = getScreenCenter();
-        List<HitResult> hits;
         if (frame != null) {
-            hits = frame.hitTest(pt.x, pt.y);
-            for (HitResult hit : hits) {
-                Trackable trackable = hit.getTrackable();
-                if (trackable instanceof Plane &&
-                        ((Plane) trackable).isPoseInPolygon(hit.getHitPose()))
-                {
-                    Anchor hitAnchor = hit.createAnchor();
-                    if (isHurdle) {
-                        // Pose endPose = hit.getHitPose();
-                        Camera camera = fragment.getArSceneView().getScene().getCamera();
-                        Vector3 look = camera.getForward();
-                        hurdleBall(look, look, arSceneView, hitAnchor);
-                    } else {
+            if (isHurdle) {
+                Camera camera = fragment.getArSceneView().getScene().getCamera();
+                Ray gazeRay = camera.screenPointToRay(pt.x, pt.y);
+                Vector3 ourPosition = gazeRay.getOrigin();
+                Vector3 gazeDirection = gazeRay.getDirection();
+
+                // Add an Anchor in front of the camera
+                Session session = arSceneView.getSession();
+                float[] pos = { 0, 0, -1 };
+                float[] rotation = { 0, 0, 0, 1 };
+                Anchor anchor =  session.createAnchor(new Pose(pos, rotation));
+
+                hurdleBall(gazeDirection, ourPosition, arSceneView, anchor);
+            } else {
+                List<HitResult> hits = frame.hitTest(pt.x, pt.y);
+                for (HitResult hit : hits) {
+                    Trackable trackable = hit.getTrackable();
+                    if (trackable instanceof Plane &&
+                            ((Plane) trackable).isPoseInPolygon(hit.getHitPose())) {
+                        Anchor hitAnchor = hit.createAnchor();
                         physicsController = new PhysicsController(getModelParameters());
                         iconButton.setEnabled(false);
                         buildTower(arSceneView, hitAnchor);
