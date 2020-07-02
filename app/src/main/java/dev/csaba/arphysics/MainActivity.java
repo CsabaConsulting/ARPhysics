@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         int ballRestitutionInt = preferences.getInt("ball_restitution", 0);
         int ballFrictionInt = preferences.getInt("ball_friction", 50);
         int ballDensityInt = preferences.getInt("ball_density", 80);
+        int slowMotion = preferences.getInt("slow_motion", 1);
 
         return new ModelParameters(
             NUM_FLOORS,
@@ -81,7 +82,8 @@ public class MainActivity extends AppCompatActivity {
             HEIGHT,
             DEPTH,
             RADIUS,
-            CONVEX_MARGIN
+            CONVEX_MARGIN,
+            slowMotion
         );
     }
 

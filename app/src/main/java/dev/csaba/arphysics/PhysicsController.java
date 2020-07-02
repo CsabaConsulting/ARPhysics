@@ -40,9 +40,12 @@ public class PhysicsController {
   private RigidBody[] slabRBs;
   private Node[] slabNodes;
   private long previousTime;
+  private long tickCounter;  // For slow motion
+  private int slowMotion;
 
   public PhysicsController(ModelParameters modelParameters) {
     this.modelParameters = modelParameters;
+    this.slowMotion = modelParameters.getSlowMotion();
     initialize();
   }
 
@@ -178,6 +181,7 @@ public class PhysicsController {
   }
 
   public void updatePhysics() {
+    // Approximately called with 30 FPS in my tests
     if (previousTime <= 0) {
       return;
     }
@@ -185,6 +189,14 @@ public class PhysicsController {
     long timeDeltaMillis = currentTime - previousTime;
     if (timeDeltaMillis <= 0) {
       return;
+    }
+
+    tickCounter++;
+    if (slowMotion > 1) {
+      if (tickCounter % slowMotion == 0) {
+        return;
+      }
+      timeDeltaMillis /= slowMotion;
     }
 
     // stepSimulation takes deltaTime in the unit of seconds
