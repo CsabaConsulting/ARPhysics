@@ -34,13 +34,11 @@ public class PhysicsController {
 
   private ModelParameters modelParameters;
   private DiscreteDynamicsWorld dynamicsWorld;
-  private SequentialImpulseConstraintSolver solver;
   private RigidBody ballRB;
   private Node ballNode;
   private RigidBody[] slabRBs;
   private Node[] slabNodes;
   private long previousTime;
-  private long tickCounter;  // For slow motion
   private int slowMotion;
 
   public PhysicsController(ModelParameters modelParameters) {
@@ -54,7 +52,7 @@ public class PhysicsController {
     DefaultCollisionConfiguration collisionConfiguration = new DefaultCollisionConfiguration();
     CollisionDispatcher dispatcher = new CollisionDispatcher(collisionConfiguration);
     DbvtBroadphase broadPhase = new DbvtBroadphase();
-    solver = new SequentialImpulseConstraintSolver();
+    SequentialImpulseConstraintSolver solver = new SequentialImpulseConstraintSolver();
 
     dynamicsWorld = new DiscreteDynamicsWorld(dispatcher, broadPhase, solver, collisionConfiguration);
 
@@ -72,6 +70,13 @@ public class PhysicsController {
             String.format("Ball pos %f, %f, %f, inertia %f, %f, %f",
                     ballPosition.x, ballPosition.y, ballPosition.z,
                     inertia.x, inertia.y, inertia.z)
+    );
+    Vector3 localPos = ballNode.getLocalPosition();
+    Quaternion localRot = ballNode.getLocalRotation();
+    Log.d(TAG,
+            String.format("Ball node %f, %f, %f, rot %f, %f, %f, %f",
+                    localPos.x, localPos.y, localPos.z,
+                    localRot.x, localRot.y, localRot.z, localRot.w)
     );
 
     this.ballNode = ballNode;
@@ -92,7 +97,7 @@ public class PhysicsController {
     ballRB = new RigidBody(ballRBInfo);
     ballRB.setActivationState(DISABLE_DEACTIVATION);
     dynamicsWorld.addRigidBody(ballRB);
-    previousTime = java.lang.System.currentTimeMillis();
+    // previousTime = java.lang.System.currentTimeMillis();
   }
 
   public void addGroundPlane() {
@@ -114,8 +119,9 @@ public class PhysicsController {
 
   public void addSlabRigidBody(int index, Node slabNode, Vector3f slabBox, Vector3f slabPosition) {
     this.slabNodes[index] = slabNode;
-    float margin = 0.0f;  // modelParameters.getConvexMargin();
-    float doubleMargin = margin * 2;
+    float margin = modelParameters.getConvexMargin();
+    float marginShrink = 0.0f;  // margin;
+    float doubleMargin = marginShrink * 2;
     // We need to shrink the box with the margin, so
     // the slabs would touch and would not float on each other.
     // This has to be reversed in updatePhysics.
@@ -132,9 +138,9 @@ public class PhysicsController {
     // We need to compensate the position due to the SlabBox shrink.
     // This has to be reversed in updatePhysics.
     Vector3f compensatedSlabPosition = new Vector3f(
-      slabPosition.x + margin,
-      slabPosition.y + margin,
-      slabPosition.z + margin
+      slabPosition.x + marginShrink,
+      slabPosition.y + marginShrink,
+      slabPosition.z + marginShrink
     );
     slabTransform.origin.set(compensatedSlabPosition);
 
@@ -150,14 +156,18 @@ public class PhysicsController {
     slabRBs[index] = slabRB;
 
     dynamicsWorld.addRigidBody(slabRB);
+
+     if (index == modelParameters.getNumFloors() * 2 - 1) {
+       previousTime = java.lang.System.currentTimeMillis();
+     }
   }
 
   public Pose getElementPose(RigidBody rigidBody) {
-    Transform ballTransform = new Transform();
-    rigidBody.getMotionState().getWorldTransform(ballTransform);
+    Transform elementTransform = new Transform();
+    rigidBody.getMotionState().getWorldTransform(elementTransform);
 
     Quat4f rot = new Quat4f();
-    ballTransform.getRotation(rot);
+    elementTransform.getRotation(rot);
 
     float margin = 0.0f;  // modelParameters.getConvexMargin();
     // Reverse the margin compensation.
@@ -166,9 +176,9 @@ public class PhysicsController {
     // Since the margin is already small this might not be much visible.
     // Otherwise we'll have to calculate the proper geometry based on the rotation.
     float[] translation = {
-      ballTransform.origin.x - margin,
-      ballTransform.origin.y - margin,
-      ballTransform.origin.z - margin
+      elementTransform.origin.x - margin,
+      elementTransform.origin.y - margin,
+      elementTransform.origin.z - margin
     };
     float[] rotation = {
       rot.x,
@@ -191,11 +201,7 @@ public class PhysicsController {
       return;
     }
 
-    tickCounter++;
     if (slowMotion > 1) {
-      if (tickCounter % slowMotion == 0) {
-        return;
-      }
       timeDeltaMillis /= slowMotion;
     }
 
@@ -208,6 +214,11 @@ public class PhysicsController {
       Pose pose = getElementPose(ballRB);
       ballNode.setLocalPosition(new Vector3(pose.tx(), pose.ty(), pose.tz()));
       ballNode.setLocalRotation(new Quaternion(pose.qx(), pose.qy(), pose.qz(), pose.qw()));
+      Log.d(TAG,
+              String.format("Ball node update %f, %f, %f, rot %f, %f, %f, %f",
+                      pose.tx(), pose.ty(), pose.tz(),
+                      pose.qx(), pose.qy(), pose.qz(), pose.qw())
+      );
     }
 
     // Update the slabs
