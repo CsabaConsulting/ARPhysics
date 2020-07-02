@@ -1,5 +1,6 @@
 package dev.csaba.arphysics;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -284,9 +285,10 @@ public class MainActivity extends AppCompatActivity {
     private void initializeGallery() {
         ImageView settingsIcon = findViewById(R.id.settingsIcon);
         settingsIcon.setOnClickListener(view -> {
-            // Intent intent = new Intent(this, SettingsActivity.class);
-            // startActivity(intent);
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
 
+            /*
             ModelParameters modelParameters = getModelParameters();
             String infoText = String.format(Locale.getDefault(),
                     "Gravity = %.2f m/s^2\n", modelParameters.getGravity());
@@ -309,6 +311,7 @@ public class MainActivity extends AppCompatActivity {
                     .setPositiveButton("OK", null);
             AlertDialog dialog = builder.create();
             dialog.show();
+           */
         });
 
         ImageView pantheonIcon = findViewById(R.id.pantheonIcon);
