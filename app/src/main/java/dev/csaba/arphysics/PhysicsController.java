@@ -26,9 +26,7 @@ import com.google.ar.sceneform.math.Vector3;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
-import static com.bulletphysics.collision.dispatch.CollisionObject.ACTIVE_TAG;
 import static com.bulletphysics.collision.dispatch.CollisionObject.DISABLE_DEACTIVATION;
-import static com.bulletphysics.collision.dispatch.CollisionObject.ISLAND_SLEEPING;
 
 
 public class PhysicsController {
@@ -42,7 +40,7 @@ public class PhysicsController {
   private Node ballNode;
   private RigidBody[] slabRBs;
   private Node[] slabNodes;
-  private long previous_time;
+  private long previousTime;
 
   public PhysicsController(ModelParameters modelParameters) {
     this.modelParameters = modelParameters;
@@ -90,19 +88,9 @@ public class PhysicsController {
     ballRBInfo.friction = modelParameters.getBallFriction();
 
     ballRB = new RigidBody(ballRBInfo);
-    ballRB.setCollisionFlags(CollisionFlags.KINEMATIC_OBJECT);
     ballRB.setActivationState(DISABLE_DEACTIVATION);
-
-    // int slabCount = slabRBs.length;
-    // for (int index = 0; index < slabCount; index++) {
-    //   Node slabNode = slabNodes[index];
-    //   if (slabNode != null) {
-    //     slabRBs[index].setActivationState(DISABLE_DEACTIVATION);
-    //   }
-    // }
-
     dynamicsWorld.addRigidBody(ballRB);
-    previous_time = java.lang.System.currentTimeMillis();
+    previousTime = java.lang.System.currentTimeMillis();
   }
 
   public void addGroundPlane() {
@@ -156,7 +144,6 @@ public class PhysicsController {
     slabRBInfo.friction = modelParameters.getBallFriction();
 
     RigidBody slabRB = new RigidBody(slabRBInfo);
-    slabRB.setCollisionFlags(CollisionFlags.KINEMATIC_OBJECT);
     slabRB.setActivationState(DISABLE_DEACTIVATION);
     slabRBs[index] = slabRB;
 
@@ -192,14 +179,18 @@ public class PhysicsController {
   }
 
   public void updatePhysics() {
-    if (previous_time <= 0) {
+    if (previousTime <= 0) {
       return;
     }
-    long current_time = java.lang.System.currentTimeMillis();
+    long currentTime = java.lang.System.currentTimeMillis();
+    long timeDeltaMillis = currentTime - previousTime;
+    if (timeDeltaMillis <= 0) {
+      return;
+    }
 
     // stepSimulation takes deltaTime in the unit of seconds
-    dynamicsWorld.stepSimulation((current_time - previous_time) / 1000.0f);
-    previous_time = current_time;
+    dynamicsWorld.stepSimulation(timeDeltaMillis / 1000.0f);
+    previousTime = currentTime;
 
     // Update the ball
     if (ballNode != null) {
