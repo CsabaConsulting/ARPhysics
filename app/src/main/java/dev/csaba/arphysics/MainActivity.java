@@ -214,16 +214,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void hurdleBall(Vector3 hurdleVector, Vector3 cameraPosition, ArSceneView arSceneView, Anchor anchor) {
-        if (physicsController == null) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.WarningDialogStyle);
-            builder.setMessage(getString(R.string.step123_details))
-                .setTitle(getString(R.string.step123_title))
-                .setPositiveButton("OK", null);
-            AlertDialog dialog = builder.create();
-            dialog.show();
-            return;
-        }
-
         AnchorNode anchorNode = new AnchorNode(anchor);
         Scene scene = arSceneView.getScene();
         anchorNode.setParent(scene);
@@ -231,21 +221,24 @@ public class MainActivity extends AppCompatActivity {
         Color ballColor = new Color(android.graphics.Color.RED);
         MaterialFactory.makeOpaqueWithColor(this, ballColor)
             .thenAccept(material -> {
+                Vector3 zero = new Vector3(0.0f, 0.0f, 0.0f);
                 ModelRenderable renderable = ShapeFactory.makeSphere(
-                        RADIUS,
-                        cameraPosition,
-                        material
+                    RADIUS,
+                    zero,
+                    // cameraPosition,
+                    material
                 );
 
                 Node node = new Node();
                 node.setParent(anchorNode);
                 node.setRenderable(renderable);
-                node.setLocalPosition(new Vector3(0, 0, 0));
+                node.setLocalPosition(zero);
 
                 // The camera look direction is the hurdle inertia, maybe scaling needed
                 physicsController.addBallRigidBody(
                     node,
-                    new Vector3f(cameraPosition.x, cameraPosition.y, cameraPosition.z),
+                    // new Vector3f(cameraPosition.x, cameraPosition.y, cameraPosition.z),
+                    new Vector3f(0.0f, 0.0f, 0.0f),
                     new Vector3f(hurdleVector.x / 2, hurdleVector.y / 2, hurdleVector.z / 2)
                 );
                 appState = AppState.BALL_HURDLED;
@@ -278,12 +271,12 @@ public class MainActivity extends AppCompatActivity {
 
                 // Add an Anchor in front of the camera
                 Session session = arSceneView.getSession();
-                float[] pos = { 0, 0, -1 };
+                float[] pos = { 0, 0, 0 };
                 float[] rotation = { 0, 0, 0, 1 };
                 assert session != null;
-                Anchor anchor =  session.createAnchor(new Pose(pos, rotation));
+                Anchor viewAnchor =  session.createAnchor(new Pose(pos, rotation));
 
-                hurdleBall(gazeDirection, ourPosition, arSceneView, anchor);
+                hurdleBall(gazeDirection, ourPosition, arSceneView, viewAnchor);
             } else {
                 List<HitResult> hits = frame.hitTest(pt.x, pt.y);
                 for (HitResult hit : hits) {
