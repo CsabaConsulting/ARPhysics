@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
                 physicsController.addBallRigidBody(
                     node,
                     new Vector3f(cameraPosition.x, cameraPosition.y, cameraPosition.z),
-                    new Vector3f(hurdleVector.x, hurdleVector.y, hurdleVector.z)
+                    new Vector3f(hurdleVector.x / 2, hurdleVector.y / 2, hurdleVector.z / 2)
                 );
             });
     }
