@@ -89,4 +89,22 @@
         app:showSeekBarValue="true"
         app:icon="@drawable/ic_slo_mo"/>
 
+    <SeekBarPreference
+        app:key="slow_motion"
+        app:title="@string/slow_motion"
+        app:summary="@string/slow_motion_help"
+        android:max="8"
+        app:defaultValue="1"
+        app:showSeekBarValue="true"
+        app:icon="@drawable/ic_slo_mo"/>
+
+    <SeekBarPreference
+        app:key="num_floors"
+        app:title="@string/num_floors"
+        app:summary="@string/num_floors_help"
+        android:max="25"
+        app:defaultValue="1"
+        app:showSeekBarValue="true"
+        app:icon="@drawable/ic_floors"/>
+
 </PreferenceScreen>

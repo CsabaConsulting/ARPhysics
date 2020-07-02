@@ -17,6 +17,8 @@
     <string name="ball_density_help">Density measured in (10^2 kg/m^3). Aluminium ~26, Titanium ~45, Iron ~79, Lead ~113, Platinum ~215</string>
     <string name="slow_motion">Slow motion</string>
     <string name="slow_motion_help">How much the simulation time should be slowed down (default: 1x = no slowdown)</string>
+    <string name="num_floors">Tower`s stack height</string>
+    <string name="num_floors_help">Number of floors of the wooden slab tower structure</string>
     <string name="pantheon_icon">Wooden slab structure</string>
     <string name="aim_icon">Metal ball hurdle</string>
     <string name="corsshairs">Cross hair to aim</string>

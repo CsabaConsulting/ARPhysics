@@ -3,6 +3,13 @@ package dev.csaba.arphysics;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Frame;
@@ -26,23 +33,12 @@ import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.ShapeFactory;
 import com.google.ar.sceneform.ux.ArFragment;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceManager;
-
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-
 import java.util.List;
-import java.util.Locale;
-
 import javax.vecmath.Vector3f;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
-    private static final int NUM_FLOORS = 10;
     private static final float WIDTH = 0.2f;
     private static final float HEIGHT = 0.05f;
     private static final float DEPTH = 0.025f;
@@ -68,9 +64,10 @@ public class MainActivity extends AppCompatActivity {
         int ballFrictionInt = preferences.getInt("ball_friction", 50);
         int ballDensityInt = preferences.getInt("ball_density", 80);
         int slowMotion = preferences.getInt("slow_motion", 1);
+        int numFloors = preferences.getInt("num_floors", 10);
 
         return new ModelParameters(
-            NUM_FLOORS,
+            numFloors,
             gravityInt / 10.0f,
             slabRestitutionInt / 100.0f,
             slabFrictionInt / 100.0f,
@@ -95,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         fragment = (ArFragment)
                 getSupportFragmentManager().findFragmentById(R.id.sceneform_fragment);
 
+        assert fragment != null;
         fragment.getArSceneView().getScene().addOnUpdateListener(frameTime -> {
             fragment.onUpdate(frameTime);
             onUpdate();
@@ -170,7 +168,8 @@ public class MainActivity extends AppCompatActivity {
         Color slabColor = new Color(0xFF593C1F);  // Brown RGB: 89, 60, 31
         MaterialFactory.makeOpaqueWithColor(this, slabColor)
                 .thenAccept(material -> {
-            for (int i = 0; i < NUM_FLOORS; i++) {
+            int numFloors = getModelParameters().getNumFloors();
+            for (int i = 0; i < numFloors; i++) {
                 boolean even = i % 2 == 0;
                 for (int j = -1; j <= 1; j += 2) {
                     Vector3 box = new Vector3(even ? WIDTH : DEPTH, HEIGHT, even ? DEPTH: WIDTH);
@@ -256,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
                 Session session = arSceneView.getSession();
                 float[] pos = { 0, 0, -1 };
                 float[] rotation = { 0, 0, 0, 1 };
+                assert session != null;
                 Anchor anchor =  session.createAnchor(new Pose(pos, rotation));
 
                 hurdleBall(gazeDirection, ourPosition, arSceneView, anchor);
