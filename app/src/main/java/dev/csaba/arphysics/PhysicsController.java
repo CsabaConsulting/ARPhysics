@@ -81,7 +81,7 @@ public class PhysicsController {
     ballTransform.origin.set(ballPosition);
 
     DefaultMotionState ballMotionState = new DefaultMotionState(ballTransform);
-    float mass = (float)(modelParameters.getBallDensity() * 1000 * 4 / 3 * Math.PI * r * r * r);
+    float mass = (float)(modelParameters.getBallDensity() * 4 / 3 * Math.PI * r * r * r);
     RigidBodyConstructionInfo ballRBInfo = new RigidBodyConstructionInfo(
         mass, ballMotionState, ballShape, inertia);
     ballRBInfo.restitution = modelParameters.getBallRestitution();
@@ -137,7 +137,7 @@ public class PhysicsController {
     slabTransform.origin.set(compensatedSlabPosition);
 
     DefaultMotionState slabMotionState = new DefaultMotionState(slabTransform);
-    float mass = modelParameters.getSlabDensity() * 1000 * slabBox.x * slabBox.y * slabBox.z;
+    float mass = modelParameters.getSlabDensity() * slabBox.x * slabBox.y * slabBox.z;
     RigidBodyConstructionInfo slabRBInfo = new RigidBodyConstructionInfo(
         mass, slabMotionState, slabShape, new Vector3f(0, 0, 0));
     slabRBInfo.restitution = modelParameters.getBallRestitution();

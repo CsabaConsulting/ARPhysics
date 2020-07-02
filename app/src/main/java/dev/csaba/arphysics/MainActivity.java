@@ -68,10 +68,10 @@ public class MainActivity extends AppCompatActivity {
             gravityInt / 10.0f,
             slabRestitutionInt / 100.0f,
             slabFrictionInt / 100.0f,
-            slabDensityInt / 100.0f,
+            slabDensityInt * 10.0f,
             ballRestitutionInt / 100.0f,
             ballFrictionInt / 100.0f,
-            ballDensityInt / 100.0f,
+            ballDensityInt * 100.0f,
             WIDTH,
             HEIGHT,
             DEPTH,
@@ -282,13 +282,13 @@ public class MainActivity extends AppCompatActivity {
             infoText += String.format(Locale.getDefault(),
                     "Slab friction = %.2f\n", modelParameters.getSlabFriction());
             infoText += String.format(Locale.getDefault(),
-                    "Slab density = %.2f 10^3 kg/m^3\n", modelParameters.getSlabDensity());
+                    "Slab density = %.3f kg/m^3\n", modelParameters.getSlabDensity());
             infoText += String.format(Locale.getDefault(),
                     "Ball restitution = %.2f\n", modelParameters.getBallFriction());
             infoText += String.format(Locale.getDefault(),
                     "Ball friction = %.2f\n", modelParameters.getBallFriction());
             infoText += String.format(Locale.getDefault(),
-                    "Ball density = %.2f 10^3 kg/m^3\n", modelParameters.getBallDensity());
+                    "Ball density = %.3f kg/m^3\n", modelParameters.getBallDensity());
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.InfoDialogStyle);
             builder.setMessage(infoText)
