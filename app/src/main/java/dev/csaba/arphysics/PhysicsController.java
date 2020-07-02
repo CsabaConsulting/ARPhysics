@@ -68,6 +68,12 @@ public class PhysicsController {
   }
 
   public void addBallRigidBody(Node ballNode, Vector3f ballPosition, Vector3f inertia) {
+    Log.d(TAG,
+            String.format("Ball pos %f, %f, %f, inertia %f, %f, %f",
+                    ballPosition.x, ballPosition.y, ballPosition.z,
+                    inertia.x, inertia.y, inertia.z)
+    );
+
     this.ballNode = ballNode;
     float r = modelParameters.getRadius();
     CollisionShape ballShape = new SphereShape(r);
@@ -213,7 +219,7 @@ public class PhysicsController {
       }
     }
 
-    printDebugInfo();
+    // printDebugInfo();
   }
 
   private void printDebugInfo() {
