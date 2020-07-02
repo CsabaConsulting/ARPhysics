@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                     node.setParent(anchorNode);
                     node.setRenderable(renderable);
                     float displacement = (WIDTH - 2 * DEPTH) / 2 * j;
-                    float margin = 0.0f;  // CONVEX_MARGIN
+                    float margin = CONVEX_MARGIN;
                     Vector3 pos = new Vector3(
                         even ? 0.0f : displacement,
                         margin + (HEIGHT + margin) * i,
