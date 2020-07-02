@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Frame;
 import com.google.ar.core.HitResult;
@@ -25,6 +26,7 @@ import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Camera;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
+import com.google.ar.sceneform.Sun;
 import com.google.ar.sceneform.collision.Ray;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Color;
@@ -37,6 +39,12 @@ import java.util.List;
 import javax.vecmath.Vector3f;
 
 public class MainActivity extends AppCompatActivity {
+    enum AppState {
+        INITIAL,
+        TOWER_PLACED,
+        BALL_HURDLED
+    }
+
     private static final String TAG = "MainActivity";
 
     private static final float WIDTH = 0.2f;
@@ -51,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isHitting;
 
     private PhysicsController physicsController;
+    private AppState appState = AppState.INITIAL;
 
     ModelParameters getModelParameters() {
         SharedPreferences preferences =
@@ -200,6 +209,7 @@ public class MainActivity extends AppCompatActivity {
                     );
                 }
             }
+            appState = AppState.TOWER_PLACED;
         });
     }
 
@@ -211,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("OK", null);
             AlertDialog dialog = builder.create();
             dialog.show();
+            return;
         }
 
         AnchorNode anchorNode = new AnchorNode(anchor);
@@ -237,10 +248,24 @@ public class MainActivity extends AppCompatActivity {
                     new Vector3f(cameraPosition.x, cameraPosition.y, cameraPosition.z),
                     new Vector3f(hurdleVector.x / 2, hurdleVector.y / 2, hurdleVector.z / 2)
                 );
+                appState = AppState.BALL_HURDLED;
             });
     }
 
     private void addObject(boolean isHurdle, ImageView iconButton) {
+        if (isHurdle && appState != AppState.TOWER_PLACED) {
+            String text = getString(R.string.tower_before_hurdle);
+            Snackbar.make(findViewById(android.R.id.content),
+                    text, Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+        if (!isHurdle && appState != AppState.INITIAL) {
+            String text = getString(R.string.tower_after_initial);
+            Snackbar.make(findViewById(android.R.id.content),
+                    text, Snackbar.LENGTH_SHORT).show();
+            return;
+        }
+
         ArSceneView arSceneView = fragment.getArSceneView();
         Frame frame = fragment.getArSceneView().getArFrame();
         android.graphics.Point pt = getScreenCenter();
@@ -276,6 +301,7 @@ public class MainActivity extends AppCompatActivity {
                             physicsController = new PhysicsController(getModelParameters());
                             iconButton.setEnabled(false);
                             buildTower(arSceneView, hitAnchor);
+                            iconButton.setEnabled(true);
                         }
                     }
                     break;
@@ -284,11 +310,55 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void clearScene() {
+        if (appState == AppState.INITIAL) {
+            String text = getString(R.string.already_clean_scene);
+            Snackbar.make(findViewById(android.R.id.content),
+                    text, Snackbar.LENGTH_SHORT).show();
+
+            return;
+        }
+
+        physicsController = null;
+        // Clear the SceneForm scene
+        fragment.getArSceneView().getScene().callOnHierarchy(node -> {
+            if (node instanceof Camera || node instanceof Sun) {
+                return;
+            }
+            node.setParent(null);
+            if (node instanceof AnchorNode) {
+                Anchor anchorNode = ((AnchorNode) node).getAnchor();
+                if (anchorNode != null) {
+                    anchorNode.detach();
+                }
+            }
+        });
+        appState = AppState.INITIAL;
+    }
+
+    private void displayHelp() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.InfoDialogStyle);
+        builder.setMessage(getString(R.string.how_to_play))
+                .setTitle(getString(R.string.quick_help))
+                .setPositiveButton("OK", null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     private void initializeGallery() {
+        ImageView restartIcon = findViewById(R.id.restartIcon);
+        restartIcon.setOnClickListener(view -> clearScene());
+
         ImageView settingsIcon = findViewById(R.id.settingsIcon);
         settingsIcon.setOnClickListener(view -> {
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
+            if (appState == AppState.INITIAL) {
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+            } else {
+                String text = getString(R.string.settings_only_while_initial);
+                Snackbar.make(findViewById(android.R.id.content),
+                        text, Snackbar.LENGTH_SHORT).show();
+            }
 
             /*
             ModelParameters modelParameters = getModelParameters();
@@ -321,5 +391,11 @@ public class MainActivity extends AppCompatActivity {
 
         ImageView aimIcon = findViewById(R.id.aimIcon);
         aimIcon.setOnClickListener(view -> addObject(true, null));
+
+        ImageView step1Icon = findViewById(R.id.step1Icon);
+        step1Icon.setOnClickListener(view -> displayHelp());
+
+        ImageView step2Icon = findViewById(R.id.step2Icon);
+        step2Icon.setOnClickListener(view -> displayHelp());
     }
 }
