@@ -93,7 +93,7 @@
         app:key="slow_motion"
         app:title="@string/slow_motion"
         app:summary="@string/slow_motion_help"
-        android:max="8"
+        android:max="6"
         app:defaultValue="1"
         app:showSeekBarValue="true"
         app:icon="@drawable/ic_slo_mo"/>
