@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.bulletphysics.collision.broadphase.DbvtBroadphase;
 import com.bulletphysics.collision.dispatch.CollisionDispatcher;
-import com.bulletphysics.collision.dispatch.CollisionFlags;
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
 import com.bulletphysics.collision.shapes.BoxShape;
@@ -112,7 +111,7 @@ public class PhysicsController {
 
   public void addSlabRigidBody(int index, Node slabNode, Vector3f slabBox, Vector3f slabPosition) {
     this.slabNodes[index] = slabNode;
-    float margin = modelParameters.getConvexMargin();
+    float margin = 0.0f;  // modelParameters.getConvexMargin();
     float doubleMargin = margin * 2;
     // We need to shrink the box with the margin, so
     // the slabs would touch and would not float on each other.
@@ -157,7 +156,7 @@ public class PhysicsController {
     Quat4f rot = new Quat4f();
     ballTransform.getRotation(rot);
 
-    float margin = modelParameters.getConvexMargin();
+    float margin = 0.0f;  // modelParameters.getConvexMargin();
     // Reverse the margin compensation.
     // A rudimentary version doesn't account for the rotation,
     // so it could miscalculate by sqrt(2)-1 (0.414213562) x margin.

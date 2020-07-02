@@ -11,6 +11,7 @@ import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
 import com.google.ar.core.Trackable;
 import com.google.ar.core.TrackingState;
+import com.google.ar.core.exceptions.FatalException;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Camera;
@@ -28,6 +29,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -37,6 +39,8 @@ import java.util.Locale;
 import javax.vecmath.Vector3f;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
+
     private static final int NUM_FLOORS = 10;
     private static final float WIDTH = 0.2f;
     private static final float HEIGHT = 0.05f;
@@ -177,9 +181,10 @@ public class MainActivity extends AppCompatActivity {
                     node.setParent(anchorNode);
                     node.setRenderable(renderable);
                     float displacement = (WIDTH - 2 * DEPTH) / 2 * j;
+                    float margin = 0.0f;  // CONVEX_MARGIN
                     Vector3 pos = new Vector3(
                         even ? 0.0f : displacement,
-                        CONVEX_MARGIN + (HEIGHT + /* 2 * */ CONVEX_MARGIN) * i,
+                        margin + (HEIGHT + margin) * i,
                         even ? displacement : 0.0f
                     );
                     node.setLocalPosition(pos);
@@ -257,10 +262,18 @@ public class MainActivity extends AppCompatActivity {
                     Trackable trackable = hit.getTrackable();
                     if (trackable instanceof Plane &&
                             ((Plane) trackable).isPoseInPolygon(hit.getHitPose())) {
-                        Anchor hitAnchor = hit.createAnchor();
-                        physicsController = new PhysicsController(getModelParameters());
-                        iconButton.setEnabled(false);
-                        buildTower(arSceneView, hitAnchor);
+                        Anchor hitAnchor = null;
+                        try {
+                            hitAnchor = hit.createAnchor();
+                        }
+                        catch (FatalException ex) {
+                            Log.d(TAG, "Unexpected error while trying to create anchor for the tower");
+                        }
+                        if (hitAnchor != null) {
+                            physicsController = new PhysicsController(getModelParameters());
+                            iconButton.setEnabled(false);
+                            buildTower(arSceneView, hitAnchor);
+                        }
                     }
                     break;
                 }
