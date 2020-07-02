@@ -97,7 +97,7 @@ public class PhysicsController {
     ballRB = new RigidBody(ballRBInfo);
     ballRB.setActivationState(DISABLE_DEACTIVATION);
     dynamicsWorld.addRigidBody(ballRB);
-    // previousTime = java.lang.System.currentTimeMillis();
+    previousTime = java.lang.System.currentTimeMillis();
   }
 
   public void addGroundPlane() {
@@ -157,9 +157,9 @@ public class PhysicsController {
 
     dynamicsWorld.addRigidBody(slabRB);
 
-     if (index == modelParameters.getNumFloors() * 2 - 1) {
-       previousTime = java.lang.System.currentTimeMillis();
-     }
+     // if (index == modelParameters.getNumFloors() * 2 - 1) {
+     //   previousTime = java.lang.System.currentTimeMillis();
+     // }
   }
 
   public Pose getElementPose(RigidBody rigidBody) {
