@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
     private void onUpdate() {
         boolean trackingChanged = updateTracking();
 
-        if (physicsController != null) {
+        if (physicsController != null && appState != AppState.INITIAL) {
             physicsController.updatePhysics();
         }
 
@@ -314,6 +314,8 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        appState = AppState.INITIAL;
+        physicsController.clearScene();
         physicsController = null;
         // Clear the SceneForm scene
         fragment.getArSceneView().getScene().callOnHierarchy(node -> {
@@ -328,7 +330,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        appState = AppState.INITIAL;
     }
 
     private void displayHelp() {

@@ -25,8 +25,6 @@ import com.google.ar.sceneform.math.Vector3;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
-import static com.bulletphysics.collision.dispatch.CollisionObject.DISABLE_DEACTIVATION;
-
 
 public class PhysicsController {
 
@@ -224,6 +222,17 @@ public class PhysicsController {
     }
 
     // printDebugInfo();
+  }
+
+  public void clearScene() {
+    ballNode = null;
+    dynamicsWorld.removeRigidBody(ballRB);
+
+    int slabCount = slabRBs.length;
+    for (int index = 0; index < slabCount; index++) {
+      slabNodes[index] = null;
+      dynamicsWorld.removeRigidBody(slabRBs[index]);
+    }
   }
 
   private void printDebugInfo() {
