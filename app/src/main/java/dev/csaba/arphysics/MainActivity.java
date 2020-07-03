@@ -2,6 +2,7 @@ package dev.csaba.arphysics;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,7 +18,6 @@ import com.google.ar.core.Frame;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.core.Pose;
-import com.google.ar.core.Session;
 import com.google.ar.core.Trackable;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.FatalException;
@@ -27,7 +27,6 @@ import com.google.ar.sceneform.Camera;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.Sun;
-import com.google.ar.sceneform.collision.Ray;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.MaterialFactory;
@@ -146,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean updateHitTest() {
         Frame frame = fragment.getArSceneView().getArFrame();
-        android.graphics.Point pt = getScreenCenter();
+        Point pt = getScreenCenter();
         List<HitResult> hits;
         boolean wasHitting = isHitting;
         isHitting = false;
@@ -164,9 +163,9 @@ public class MainActivity extends AppCompatActivity {
         return wasHitting != isHitting;
     }
 
-    private android.graphics.Point getScreenCenter() {
+    private Point getScreenCenter() {
         View vw = findViewById(android.R.id.content);
-        return new android.graphics.Point(vw.getWidth() / 2, vw.getHeight() / 2);
+        return new Point(vw.getWidth() / 2, vw.getHeight() / 2);
     }
 
     private void buildTower(ArSceneView arSceneView, Anchor anchor) {
@@ -213,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void hurdleBall(Vector3 hurdleVector, Vector3 cameraPosition, ArSceneView arSceneView, Anchor anchor) {
+    private void hurdleBall(Vector3 startPosition, Vector3 targetPosition, ArSceneView arSceneView, Anchor anchor) {
         AnchorNode anchorNode = new AnchorNode(anchor);
         Scene scene = arSceneView.getScene();
         anchorNode.setParent(scene);
@@ -221,32 +220,34 @@ public class MainActivity extends AppCompatActivity {
         Color ballColor = new Color(android.graphics.Color.RED);
         MaterialFactory.makeOpaqueWithColor(this, ballColor)
             .thenAccept(material -> {
-                Vector3 zero = new Vector3(0.0f, 0.0f, 0.0f);
                 ModelRenderable renderable = ShapeFactory.makeSphere(
                     RADIUS,
-                    zero,
-                    // cameraPosition,
+                    startPosition,
                     material
                 );
 
                 Node node = new Node();
                 node.setParent(anchorNode);
                 node.setRenderable(renderable);
-                node.setLocalPosition(zero);
+                node.setLocalPosition(startPosition);
 
                 // The camera look direction is the hurdle inertia, maybe scaling needed
+                Vector3f velocityVector = new Vector3f(
+                    targetPosition.x - startPosition.x,
+                    targetPosition.y - startPosition.y,
+                    targetPosition.z - startPosition.z
+                );
                 physicsController.addBallRigidBody(
                     node,
-                    // new Vector3f(cameraPosition.x, cameraPosition.y, cameraPosition.z),
-                    new Vector3f(0.0f, 0.0f, 0.0f),
-                    new Vector3f(hurdleVector.x / 2, hurdleVector.y / 2, hurdleVector.z / 2)
+                    new Vector3f(startPosition.x, startPosition.y, startPosition.z),
+                    velocityVector
                 );
                 appState = AppState.BALL_HURDLED;
             });
     }
 
     private void addObject(boolean isHurdle, ImageView iconButton) {
-        if (isHurdle && appState != AppState.TOWER_PLACED) {
+        if (isHurdle && appState == AppState.INITIAL) {
             String text = getString(R.string.tower_before_hurdle);
             Snackbar.make(findViewById(android.R.id.content),
                     text, Snackbar.LENGTH_SHORT).show();
@@ -260,46 +261,47 @@ public class MainActivity extends AppCompatActivity {
         }
 
         ArSceneView arSceneView = fragment.getArSceneView();
-        Frame frame = fragment.getArSceneView().getArFrame();
-        android.graphics.Point pt = getScreenCenter();
+        Frame frame = arSceneView.getArFrame();
+        boolean found = false;
         if (frame != null) {
-            if (isHurdle) {
-                Camera camera = fragment.getArSceneView().getScene().getCamera();
-                Ray gazeRay = camera.screenPointToRay(pt.x, pt.y);
-                Vector3 ourPosition = gazeRay.getOrigin();
-                Vector3 gazeDirection = gazeRay.getDirection();
-
-                // Add an Anchor in front of the camera
-                Session session = arSceneView.getSession();
-                float[] pos = { 0, 0, 0 };
-                float[] rotation = { 0, 0, 0, 1 };
-                assert session != null;
-                Anchor viewAnchor =  session.createAnchor(new Pose(pos, rotation));
-
-                hurdleBall(gazeDirection, ourPosition, arSceneView, viewAnchor);
-            } else {
-                List<HitResult> hits = frame.hitTest(pt.x, pt.y);
-                for (HitResult hit : hits) {
-                    Trackable trackable = hit.getTrackable();
-                    if (trackable instanceof Plane &&
-                            ((Plane) trackable).isPoseInPolygon(hit.getHitPose())) {
-                        Anchor hitAnchor = null;
-                        try {
-                            hitAnchor = hit.createAnchor();
-                        }
-                        catch (FatalException ex) {
-                            Log.d(TAG, "Unexpected error while trying to create anchor for the tower");
-                        }
-                        if (hitAnchor != null) {
+            Point pt = getScreenCenter();
+            List<HitResult> hits = frame.hitTest(pt.x, pt.y);
+            for (HitResult hit : hits) {
+                Trackable trackable = hit.getTrackable();
+                Pose hitPose = hit.getHitPose();
+                if (isHurdle || trackable instanceof Plane &&
+                    ((Plane) trackable).isPoseInPolygon(hitPose))
+                {
+                    Anchor hitAnchor = null;
+                    try {
+                        hitAnchor = hit.createAnchor();
+                    }
+                    catch (FatalException ex) {
+                        Log.d(TAG, "Unexpected error while trying to create anchor for the tower");
+                    }
+                    if (hitAnchor != null) {
+                        found = true;
+                        if (isHurdle) {
+                            float[] hitTranslation = hitPose.getTranslation();
+                            Vector3 ourPosition = new Vector3(hitTranslation[0], hitTranslation[1], hitTranslation[2]);
+                            hurdleBall(new Vector3(0, 0, 0), ourPosition, arSceneView, hitAnchor);
+                        } else {
                             physicsController = new PhysicsController(getModelParameters());
                             iconButton.setEnabled(false);
                             buildTower(arSceneView, hitAnchor);
                             iconButton.setEnabled(true);
                         }
                     }
-                    break;
                 }
+                break;
             }
+        }
+        if (!found) {
+            String text = getString(
+                    isHurdle ? R.string.aim_at_the_tower : R.string.wait_until_locked_in
+            );
+            Snackbar.make(findViewById(android.R.id.content),
+                    text, Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -352,31 +354,6 @@ public class MainActivity extends AppCompatActivity {
                 Snackbar.make(findViewById(android.R.id.content),
                         text, Snackbar.LENGTH_SHORT).show();
             }
-
-            /*
-            ModelParameters modelParameters = getModelParameters();
-            String infoText = String.format(Locale.getDefault(),
-                    "Gravity = %.2f m/s^2\n", modelParameters.getGravity());
-            infoText += String.format(Locale.getDefault(),
-                    "Slab restitution = %.2f\n", modelParameters.getSlabRestitution());
-            infoText += String.format(Locale.getDefault(),
-                    "Slab friction = %.2f\n", modelParameters.getSlabFriction());
-            infoText += String.format(Locale.getDefault(),
-                    "Slab density = %.3f kg/m^3\n", modelParameters.getSlabDensity());
-            infoText += String.format(Locale.getDefault(),
-                    "Ball restitution = %.2f\n", modelParameters.getBallFriction());
-            infoText += String.format(Locale.getDefault(),
-                    "Ball friction = %.2f\n", modelParameters.getBallFriction());
-            infoText += String.format(Locale.getDefault(),
-                    "Ball density = %.3f kg/m^3\n", modelParameters.getBallDensity());
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.InfoDialogStyle);
-            builder.setMessage(infoText)
-                    .setTitle("Model parameters")
-                    .setPositiveButton("OK", null);
-            AlertDialog dialog = builder.create();
-            dialog.show();
-           */
         });
 
         ImageView pantheonIcon = findViewById(R.id.pantheonIcon);
