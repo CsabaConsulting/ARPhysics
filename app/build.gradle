@@ -32,6 +32,9 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'cz.advel.jbullet:jbullet:20101010'
     implementation 'com.google.android.gms:play-services-location:17.0.0'  // workaround https://github.com/google-ar/sceneform-android-sdk/issues/935
+    implementation 'org.jmonkeyengine:jme3-core:3.3.2-stable'
+    implementation 'org.jmonkeyengine:jme3-android:3.3.2-stable'
+    implementation 'org.jmonkeyengine:jme3-android-native:3.3.2-stable'
 
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test:runner:1.2.0'
