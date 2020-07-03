@@ -1,4 +1,4 @@
-package dev.csaba.arphysics;
+package dev.csaba.arphysics.engine;
 
 import android.util.Log;
 
@@ -25,10 +25,12 @@ import com.google.ar.sceneform.math.Vector3;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
+import dev.csaba.arphysics.ModelParameters;
 
-public class PhysicsController {
 
-  private static final String TAG = "PhysicsController";
+public class JBulletController {
+
+  private static final String TAG = "JBulletController";
 
   private ModelParameters modelParameters;
   private DiscreteDynamicsWorld dynamicsWorld;
@@ -40,7 +42,7 @@ public class PhysicsController {
   private int slowMotion;
   private Vector3f zeroVector;
 
-  public PhysicsController(ModelParameters modelParameters) {
+  public JBulletController(ModelParameters modelParameters) {
     this.modelParameters = modelParameters;
     this.slowMotion = modelParameters.getSlowMotion();
     initialize();

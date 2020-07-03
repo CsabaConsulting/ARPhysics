@@ -37,6 +37,8 @@ import com.google.ar.sceneform.ux.ArFragment;
 import java.util.List;
 import javax.vecmath.Vector3f;
 
+import dev.csaba.arphysics.engine.JBulletController;
+
 public class MainActivity extends AppCompatActivity {
     enum AppState {
         INITIAL,
@@ -57,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isTracking;
     private boolean isHitting;
 
-    private PhysicsController physicsController;
+    private JBulletController jBulletController;
     private AppState appState = AppState.INITIAL;
 
     ModelParameters getModelParameters() {
@@ -112,8 +114,8 @@ public class MainActivity extends AppCompatActivity {
     private void onUpdate() {
         boolean trackingChanged = updateTracking();
 
-        if (physicsController != null && appState != AppState.INITIAL) {
-            physicsController.updatePhysics();
+        if (jBulletController != null && appState != AppState.INITIAL) {
+            jBulletController.updatePhysics();
         }
 
         View contentView = findViewById(android.R.id.content);
@@ -200,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                     node.setLocalPosition(pos);
 
                     int index = i * 2 + (j < 0 ? 0 : 1);
-                    physicsController.addSlabRigidBody(
+                    jBulletController.addSlabRigidBody(
                         index,
                         node,
                         new Vector3f(box.x / 2, box.y / 2, box.z / 2),
@@ -237,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
                     targetPosition.y - startPosition.y,
                     targetPosition.z - startPosition.z
                 );
-                physicsController.addBallRigidBody(
+                jBulletController.addBallRigidBody(
                     node,
                     new Vector3f(startPosition.x, startPosition.y, startPosition.z),
                     velocityVector
@@ -286,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
                             Vector3 ourPosition = new Vector3(hitTranslation[0], hitTranslation[1], hitTranslation[2]);
                             hurdleBall(new Vector3(0, 0, 0), ourPosition, arSceneView, hitAnchor);
                         } else {
-                            physicsController = new PhysicsController(getModelParameters());
+                            jBulletController = new JBulletController(getModelParameters());
                             iconButton.setEnabled(false);
                             buildTower(arSceneView, hitAnchor);
                             iconButton.setEnabled(true);
@@ -315,8 +317,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         appState = AppState.INITIAL;
-        physicsController.clearScene();
-        physicsController = null;
+        jBulletController.clearScene();
+        jBulletController = null;
         // Clear the SceneForm scene
         fragment.getArSceneView().getScene().callOnHierarchy(node -> {
             if (node instanceof Camera || node instanceof Sun) {
