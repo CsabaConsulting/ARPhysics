@@ -40,6 +40,7 @@ public class PhysicsController {
   private Node[] slabNodes;
   private long previousTime;
   private int slowMotion;
+  private Vector3f zeroVector;
 
   public PhysicsController(ModelParameters modelParameters) {
     this.modelParameters = modelParameters;
@@ -59,26 +60,15 @@ public class PhysicsController {
     // Override default gravity (which would be (0, -10, 0)) with configured one
     dynamicsWorld.setGravity(new Vector3f(0f, -modelParameters.getGravity(), 0f));
 
+    zeroVector = new Vector3f(0, 0, 0);
+
     addGroundPlane();
 
     slabRBs = new RigidBody[modelParameters.getNumFloors() * 2];
     slabNodes = new Node[modelParameters.getNumFloors() * 2];
   }
 
-  public void addBallRigidBody(Node ballNode, Vector3f ballPosition, Vector3f inertia) {
-    Log.d(TAG,
-            String.format("Ball pos %f, %f, %f, inertia %f, %f, %f",
-                    ballPosition.x, ballPosition.y, ballPosition.z,
-                    inertia.x, inertia.y, inertia.z)
-    );
-    Vector3 localPos = ballNode.getLocalPosition();
-    Quaternion localRot = ballNode.getLocalRotation();
-    Log.d(TAG,
-            String.format("Ball node %f, %f, %f, rot %f, %f, %f, %f",
-                    localPos.x, localPos.y, localPos.z,
-                    localRot.x, localRot.y, localRot.z, localRot.w)
-    );
-
+  public void addBallRigidBody(Node ballNode, Vector3f ballPosition, Vector3f velocity) {
     this.ballNode = ballNode;
     float r = modelParameters.getRadius();
     CollisionShape ballShape = new SphereShape(r);
@@ -90,12 +80,15 @@ public class PhysicsController {
     DefaultMotionState ballMotionState = new DefaultMotionState(ballTransform);
     float mass = (float)(modelParameters.getBallDensity() * 4 / 3 * Math.PI * r * r * r);
     RigidBodyConstructionInfo ballRBInfo = new RigidBodyConstructionInfo(
-        mass, ballMotionState, ballShape, inertia);
+        mass, ballMotionState, ballShape, zeroVector);
     ballRBInfo.restitution = modelParameters.getBallRestitution();
     ballRBInfo.friction = modelParameters.getBallFriction();
 
     ballRB = new RigidBody(ballRBInfo);
-    ballRB.setActivationState(DISABLE_DEACTIVATION);
+    // ballRB.setActivationState(DISABLE_DEACTIVATION);
+    // ballRB.setDeactivationTime(5f);
+    ballRB.setLinearVelocity(velocity);
+    ballRB.setSleepingThresholds(0.8f, 1.0f);
     dynamicsWorld.addRigidBody(ballRB);
     previousTime = java.lang.System.currentTimeMillis();
   }
@@ -111,7 +104,7 @@ public class PhysicsController {
 
     DefaultMotionState groundMotionState = new DefaultMotionState(groundTransform);
     RigidBodyConstructionInfo groundRBInfo = new RigidBodyConstructionInfo(
-        0.0f, groundMotionState, groundShape, new Vector3f(0, 0, 0));
+        0.0f, groundMotionState, groundShape, zeroVector);
     groundRBInfo.friction = 0.6f;
     RigidBody groundRB = new RigidBody(groundRBInfo);
     dynamicsWorld.addRigidBody(groundRB);
@@ -147,19 +140,22 @@ public class PhysicsController {
     DefaultMotionState slabMotionState = new DefaultMotionState(slabTransform);
     float mass = modelParameters.getSlabDensity() * slabBox.x * slabBox.y * slabBox.z;
     RigidBodyConstructionInfo slabRBInfo = new RigidBodyConstructionInfo(
-        mass, slabMotionState, slabShape, new Vector3f(0, 0, 0));
+        mass, slabMotionState, slabShape, zeroVector);
     slabRBInfo.restitution = modelParameters.getBallRestitution();
     slabRBInfo.friction = modelParameters.getBallFriction();
 
     RigidBody slabRB = new RigidBody(slabRBInfo);
-    slabRB.setActivationState(DISABLE_DEACTIVATION);
+    // slabRB.setActivationState(DISABLE_DEACTIVATION);
+    slabRB.setSleepingThresholds(0.8f, 1.0f);
     slabRBs[index] = slabRB;
 
     dynamicsWorld.addRigidBody(slabRB);
 
-     // if (index == modelParameters.getNumFloors() * 2 - 1) {
-     //   previousTime = java.lang.System.currentTimeMillis();
-     // }
+    /*
+    if (index == modelParameters.getNumFloors() * 2 - 1) {
+      previousTime = java.lang.System.currentTimeMillis();
+    }
+    */
   }
 
   public Pose getElementPose(RigidBody rigidBody) {
@@ -214,11 +210,6 @@ public class PhysicsController {
       Pose pose = getElementPose(ballRB);
       ballNode.setLocalPosition(new Vector3(pose.tx(), pose.ty(), pose.tz()));
       ballNode.setLocalRotation(new Quaternion(pose.qx(), pose.qy(), pose.qz(), pose.qw()));
-      Log.d(TAG,
-              String.format("Ball node update %f, %f, %f, rot %f, %f, %f, %f",
-                      pose.tx(), pose.ty(), pose.tz(),
-                      pose.qx(), pose.qy(), pose.qz(), pose.qw())
-      );
     }
 
     // Update the slabs
