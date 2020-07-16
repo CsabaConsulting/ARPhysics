@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     private JBulletController jBulletController;
     private AppState appState = AppState.INITIAL;
+    private String simulationType = ChooserActivity.SIMULATION_PLANK_TOWER;
 
     ModelParameters getModelParameters() {
         SharedPreferences preferences =
@@ -107,6 +108,9 @@ public class MainActivity extends AppCompatActivity {
             fragment.onUpdate(frameTime);
             onUpdate();
         });
+
+        Intent startingIntent = getIntent();
+        simulationType = startingIntent.getStringExtra(ChooserActivity.SIMULATION_TYPE);
 
         initializeGallery();
     }
