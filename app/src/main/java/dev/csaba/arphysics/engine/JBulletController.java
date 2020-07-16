@@ -79,6 +79,7 @@ public class JBulletController {
 
     DefaultMotionState ballMotionState = new DefaultMotionState(ballTransform);
     float mass = (float)(modelParameters.getBallDensity() * 4 / 3 * Math.PI * r * r * r);
+    ballShape.calculateLocalInertia(mass, zeroVector);
     RigidBodyConstructionInfo ballRBInfo = new RigidBodyConstructionInfo(
         mass, ballMotionState, ballShape, zeroVector);
     ballRBInfo.restitution = modelParameters.getBallRestitution();
@@ -139,6 +140,7 @@ public class JBulletController {
 
     DefaultMotionState slabMotionState = new DefaultMotionState(slabTransform);
     float mass = modelParameters.getSlabDensity() * slabBox.x * slabBox.y * slabBox.z;
+    slabShape.calculateLocalInertia(mass, zeroVector);
     RigidBodyConstructionInfo slabRBInfo = new RigidBodyConstructionInfo(
         mass, slabMotionState, slabShape, zeroVector);
     slabRBInfo.restitution = modelParameters.getBallRestitution();
