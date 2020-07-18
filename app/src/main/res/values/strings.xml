@@ -32,7 +32,7 @@
     <string name="quick_help">Quick Help</string>
     <string name="how_to_play">Leftmost icon clears the scene of any previous simulations. The cog icon allows simulation parameter tuning. The building icon places a wooden slab structure to the crosshair center. The rightmost icon hurdles a ball towards the corsshair center.</string>
     <string name="tower_before_hurdle">Place a tower first before hurdling a ball</string>
-    <string name="tower_after_initial">Only one tower can be placed at once. Please clear the scene.</string>
+    <string name="tower_after_initial">Please clear the scene before trying to place structure again.</string>
     <string name="aim_at_the_tower">Try to aim at the tower</string>
     <string name="wait_until_locked_in">Wait until locked in: bright green dot in the center</string>
     <string name="chooser">Choose simulation:</string>

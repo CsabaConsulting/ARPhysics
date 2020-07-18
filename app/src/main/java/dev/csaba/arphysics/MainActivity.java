@@ -370,9 +370,18 @@ public class MainActivity extends AppCompatActivity {
         aimIcon.setOnClickListener(view -> addObject(true, null));
 
         ImageView step1Icon = findViewById(R.id.step1Icon);
-        step1Icon.setOnClickListener(view -> displayHelp());
+        if (simulationType.equals(ChooserActivity.SIMULATION_PLANK_TOWER)) {
+            step1Icon.setOnClickListener(view -> displayHelp());
+        } else {
+            step1Icon.setVisibility(View.GONE);
+        }
 
         ImageView step2Icon = findViewById(R.id.step2Icon);
-        step2Icon.setOnClickListener(view -> displayHelp());
+        if (simulationType.equals(ChooserActivity.SIMULATION_PLANK_TOWER)) {
+            step2Icon.setOnClickListener(view -> displayHelp());
+        } else {
+            step2Icon.setVisibility(View.GONE);
+            aimIcon.setVisibility(View.GONE);
+        }
     }
 }
