@@ -27,8 +27,8 @@
         app:icon="@drawable/ic_gravity"/>
 
     <SeekBarPreference
-        app:key="slab_restitution"
-        app:title="@string/slab_restitution"
+        app:key="plank_restitution"
+        app:title="@string/plank_restitution"
         app:summary="@string/restitution_help"
         android:max="100"
         app:defaultValue="50"
@@ -36,8 +36,8 @@
         app:icon="@drawable/ic_box_glove"/>
 
     <SeekBarPreference
-        app:key="slab_friction"
-        app:title="@string/slab_friction"
+        app:key="plank_friction"
+        app:title="@string/plank_friction"
         app:summary="@string/friction_help"
         android:max="100"
         app:defaultValue="50"
@@ -45,9 +45,9 @@
         app:icon="@drawable/ic_friction"/>
 
     <SeekBarPreference
-        app:key="slab_density"
-        app:title="@string/slab_density"
-        app:summary="@string/slab_density_help"
+        app:key="plank_density"
+        app:title="@string/plank_density"
+        app:summary="@string/plank_density_help"
         android:max="100"
         app:defaultValue="50"
         app:showSeekBarValue="true"

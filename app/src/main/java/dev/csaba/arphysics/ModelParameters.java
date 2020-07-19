@@ -3,9 +3,9 @@ package dev.csaba.arphysics;
 public class ModelParameters {
     private int numFloors;
     private float gravity;
-    private float slabRestitution;
-    private float slabFriction;
-    private float slabDensity;
+    private float plankRestitution;
+    private float plankFriction;
+    private float plankDensity;
     private float ballRestitution;
     private float ballFriction;
     private float ballDensity;
@@ -16,16 +16,16 @@ public class ModelParameters {
     private float convexMargin;
     private int slowMotion;
 
-    public ModelParameters(int numFloors, float gravity, float slabRestitution, float slabFriction,
-                           float slabDensity, float ballRestitution, float ballFriction,
+    public ModelParameters(int numFloors, float gravity, float plankRestitution, float plankFriction,
+                           float plankDensity, float ballRestitution, float ballFriction,
                            float ballDensity, float width, float height, float depth, float radius,
                            float convexMargin, int slowMotion)
     {
         this.numFloors = numFloors;
         this.gravity = gravity;
-        this.slabRestitution = slabRestitution;
-        this.slabFriction = slabFriction;
-        this.slabDensity = slabDensity;
+        this.plankRestitution = plankRestitution;
+        this.plankFriction = plankFriction;
+        this.plankDensity = plankDensity;
         this.ballRestitution = ballRestitution;
         this.ballFriction = ballFriction;
         this.ballDensity = ballDensity;
@@ -53,28 +53,28 @@ public class ModelParameters {
         this.gravity = gravity;
     }
 
-    public float getSlabRestitution() {
-        return slabRestitution;
+    public float getPlankRestitution() {
+        return plankRestitution;
     }
 
-    public void setSlabRestitution(float slabRestitution) {
-        this.slabRestitution = slabRestitution;
+    public void setPlankRestitution(float plankRestitution) {
+        this.plankRestitution = plankRestitution;
     }
 
-    public float getSlabFriction() {
-        return slabFriction;
+    public float getPlankFriction() {
+        return plankFriction;
     }
 
-    public void setSlabFriction(float slabFriction) {
-        this.slabFriction = slabFriction;
+    public void setPlankFriction(float plankFriction) {
+        this.plankFriction = plankFriction;
     }
 
-    public float getSlabDensity() {
-        return slabDensity;
+    public float getPlankDensity() {
+        return plankDensity;
     }
 
-    public void setSlabDensity(float slabDensity) {
-        this.slabDensity = slabDensity;
+    public void setPlankDensity(float plankDensity) {
+        this.plankDensity = plankDensity;
     }
 
     public float getBallRestitution() {
