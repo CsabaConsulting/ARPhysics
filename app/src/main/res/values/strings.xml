@@ -36,6 +36,6 @@
     <string name="aim_at_the_tower">Try to aim at the tower</string>
     <string name="wait_until_locked_in">Wait until locked in: bright green dot in the center</string>
     <string name="chooser">Choose simulation:</string>
-    <string name="plank_tower">Plank tower simulation: place a plank tower structure and then hurdle a ball towards it</string>
-    <string name="collision_box">Collision box simulation: move around a giant cylinder to stir the collision box</string>
+    <string name="plank_tower">Plank tower simulation: place a plank tower structure and then hurdle a ball at it</string>
+    <string name="collision_box">Collision box simulation: move around a cylinder to stir planks in a collision box</string>
 </resources>
