@@ -41,7 +41,6 @@ public class JBulletController {
   private RigidBody ballRB;
   private Node ballNode;
   private RigidBody cylinderRB;
-  private Node cylinderNode;
   private RigidBody[] plankRBs;
   private Node[] plankNodes;
   private long previousTime;
@@ -123,8 +122,7 @@ public class JBulletController {
     dynamicsWorld.addRigidBody(wallRB);
   }
 
-  public void addCylinderKineticBody(Node cylinderNode, Vector3f cylinderPosition) {
-    this.cylinderNode = cylinderNode;
+  public void addCylinderKineticBody(Vector3f cylinderPosition) {
     float r = modelParameters.getWidth();
     CollisionShape cylinderShape = new CylinderShape(new Vector3f(r, r, r));
 

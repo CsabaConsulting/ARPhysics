@@ -333,7 +333,6 @@ public class MainActivity extends AppCompatActivity implements Node.TransformCha
                 cylinderNode.setLocalPosition(startPosition);
 
                 jBulletController.addCylinderKineticBody(
-                    cylinderNode,
                     new Vector3f(startPosition.x, startPosition.y, startPosition.z)
                 );
                 appState = AppState.BALL_HURDLED;
