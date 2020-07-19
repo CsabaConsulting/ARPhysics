@@ -312,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements Node.TransformCha
         Color ballColor = new Color(android.graphics.Color.RED);
         MaterialFactory.makeOpaqueWithColor(this, ballColor)
             .thenAccept(material -> {
-                Vector3 startPosition = new Vector3(0, 0, 0.5f + WIDTH);
+                Vector3 startPosition = new Vector3(0, 0, 0);
                 ModelRenderable renderable = ShapeFactory.makeCylinder(
                     WIDTH,
                     WIDTH,
