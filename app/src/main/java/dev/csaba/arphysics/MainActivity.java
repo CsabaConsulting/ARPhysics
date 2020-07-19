@@ -41,7 +41,7 @@ import javax.vecmath.Vector3f;
 
 import dev.csaba.arphysics.engine.JBulletController;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Node.TransformChangedListener {
     enum AppState {
         INITIAL,
         TOWER_PLACED,
@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private JBulletController jBulletController;
     private AppState appState = AppState.INITIAL;
     private SimulationScenario simulationScenario = SimulationScenario.PlankTower;
+    private TransformableNode cylinderNode;
 
     ModelParameters getModelParameters() {
         SharedPreferences preferences =
@@ -184,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                 Vector3 box = new Vector3(even ? WIDTH : DEPTH, HEIGHT, even ? DEPTH: WIDTH);
                 ModelRenderable renderable = ShapeFactory.makeCube(
                     box,
-                    new Vector3(0.0f, 0.0f, 0.0f),
+                    new Vector3(0, 0, 0),
                     material
                 );
 
@@ -219,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
             Vector3 box = new Vector3(HEIGHT, WIDTH, HEIGHT);
             ModelRenderable renderable = ShapeFactory.makeCube(
                 box,
-                new Vector3(0.0f, 0.0f, 0.0f),
+                new Vector3(0, 0, 0),
                 material
             );
 
@@ -269,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
             .thenAccept(material -> {
                 ModelRenderable renderable = ShapeFactory.makeSphere(
                     RADIUS,
-                    startPosition,
+                    new Vector3(0, 0, 0),
                     material
                 );
 
@@ -293,6 +294,13 @@ public class MainActivity extends AppCompatActivity {
             });
     }
 
+    @Override
+    public void onTransformChanged(Node node, Node originatingNode) {
+        if (node == cylinderNode) {
+            node.getLocalPosition();
+        }
+    }
+
     private void addCollisionBoxAndCylinder(ArSceneView arSceneView, Anchor anchor) {
         AnchorNode anchorNode = new AnchorNode(anchor);
         Scene scene = arSceneView.getScene();
@@ -305,19 +313,20 @@ public class MainActivity extends AppCompatActivity {
                 ModelRenderable renderable = ShapeFactory.makeCylinder(
                     WIDTH,
                     WIDTH,
-                    startPosition,
+                    new Vector3(0, 0, 0),
                     material
                 );
 
-                TransformableNode node = new TransformableNode(fragment.getTransformationSystem());
-                node.getScaleController().setEnabled(false);
-                node.getRotationController().setEnabled(false);
-                node.setParent(anchorNode);
-                node.setRenderable(renderable);
-                node.setLocalPosition(startPosition);
+                cylinderNode = new TransformableNode(fragment.getTransformationSystem());
+                cylinderNode.addTransformChangedListener(this);
+                cylinderNode.getScaleController().setEnabled(false);
+                cylinderNode.getRotationController().setEnabled(false);
+                cylinderNode.setParent(anchorNode);
+                cylinderNode.setRenderable(renderable);
+                cylinderNode.setLocalPosition(startPosition);
 
                 jBulletController.addCylinderKineticBody(
-                    node,
+                    cylinderNode,
                     new Vector3f(startPosition.x, startPosition.y, startPosition.z)
                 );
                 appState = AppState.BALL_HURDLED;
