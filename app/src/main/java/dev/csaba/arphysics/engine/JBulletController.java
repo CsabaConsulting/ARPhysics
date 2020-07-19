@@ -141,7 +141,7 @@ public class JBulletController {
     cylinderRBInfo.friction = modelParameters.getBallFriction();
 
     cylinderRB = new RigidBody(cylinderRBInfo);
-    cylinderRB.setCollisionFlags(CollisionFlags.KINEMATIC_OBJECT);
+    // cylinderRB.setCollisionFlags(CollisionFlags.KINEMATIC_OBJECT);
     cylinderRB.setActivationState(CollisionObject.DISABLE_DEACTIVATION);
     dynamicsWorld.addRigidBody(cylinderRB);
 
@@ -269,7 +269,11 @@ public class JBulletController {
     Log.d(TAG, String.format("tr %f %f %f", translation.x, translation.y, translation.z));
     elementTransform.transform(translation);
     motionState.setWorldTransform(elementTransform);
+    cylinderRB.setWorldTransform(elementTransform);
     cylinderRB.setMotionState(motionState);
+    cylinderRB.setLinearVelocity(new Vector3f(0, 0, 0));
+    cylinderRB.setAngularVelocity(new Vector3f(0, 0, 0));
+    cylinderRB.clearForces();
   }
 
   public void updatePhysics() {
