@@ -34,6 +34,7 @@ import com.google.ar.sceneform.rendering.MaterialFactory;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.ShapeFactory;
 import com.google.ar.sceneform.ux.ArFragment;
+import com.google.ar.sceneform.ux.TransformableNode;
 
 import java.util.List;
 import javax.vecmath.Vector3f;
@@ -309,7 +310,7 @@ public class MainActivity extends AppCompatActivity {
                     material
                 );
 
-                Node node = new Node();
+                TransformableNode node = new TransformableNode(fragment.getTransformationSystem());
                 node.setParent(anchorNode);
                 node.setRenderable(renderable);
                 node.setLocalPosition(startPosition);
