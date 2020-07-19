@@ -379,6 +379,8 @@ public class MainActivity extends AppCompatActivity implements Node.TransformCha
                             float[] hitTranslation = hitPose.getTranslation();
                             Vector3 ourPosition = new Vector3(hitTranslation[0], hitTranslation[1], hitTranslation[2]);
                             hurdleBall(new Vector3(0, 0, 0), ourPosition, arSceneView, hitAnchor);
+                            ImageView crossHairIcon = findViewById(R.id.cross_hair);
+                            crossHairIcon.setVisibility(View.GONE);
                         } else {
                             jBulletController = new JBulletController(getModelParameters(), simulationScenario);
                             iconButton.setEnabled(false);
@@ -392,6 +394,8 @@ public class MainActivity extends AppCompatActivity implements Node.TransformCha
                                     Log.d(TAG, "Unexpected error while trying to create cylinder");
                                 }
                                 addCollisionBoxAndCylinder(arSceneView, boxAnchor);
+                                ImageView crossHairIcon = findViewById(R.id.cross_hair);
+                                crossHairIcon.setVisibility(View.GONE);
                             }
                             iconButton.setEnabled(true);
                         }
@@ -434,6 +438,9 @@ public class MainActivity extends AppCompatActivity implements Node.TransformCha
                 }
             }
         });
+
+        ImageView crossHairIcon = findViewById(R.id.cross_hair);
+        crossHairIcon.setVisibility(View.VISIBLE);
     }
 
     private void displayHelp() {
