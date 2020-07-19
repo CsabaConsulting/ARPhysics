@@ -15,9 +15,9 @@ import com.bulletphysics.collision.shapes.StaticPlaneShape;
 import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
-import com.bulletphysics.dynamics.character.KinematicCharacterController;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 import com.bulletphysics.linearmath.DefaultMotionState;
+import com.bulletphysics.linearmath.MotionState;
 import com.bulletphysics.linearmath.Transform;
 import com.bulletphysics.util.ObjectArrayList;
 import com.google.ar.core.Pose;
@@ -244,6 +244,28 @@ public class JBulletController {
     };
 
     return new Pose(translation, rotation);
+  }
+
+  public void updateCylinderLocation(Vector3f position) {
+    if (cylinderRB == null) {
+      return;
+    }
+    if (previousTime <= 0) {
+      // Start the simulation as soon as the cylinder moves the first time
+      previousTime = java.lang.System.currentTimeMillis();
+    }
+
+    Transform elementTransform = new Transform();
+    MotionState motionState = cylinderRB.getMotionState();
+    motionState.getWorldTransform(elementTransform);
+    Vector3f translation = new Vector3f(
+        position.x - elementTransform.origin.x,
+        position.y - elementTransform.origin.y,
+        position.z - elementTransform.origin.z
+    );
+    elementTransform.transform(translation);
+    motionState.setWorldTransform(elementTransform);
+    cylinderRB.setMotionState(motionState);
   }
 
   public void updatePhysics() {

@@ -36,6 +36,7 @@ import com.google.ar.sceneform.rendering.ShapeFactory;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
+import java.util.EnumSet;
 import java.util.List;
 import javax.vecmath.Vector3f;
 
@@ -297,7 +298,9 @@ public class MainActivity extends AppCompatActivity implements Node.TransformCha
     @Override
     public void onTransformChanged(Node node, Node originatingNode) {
         if (node == cylinderNode) {
-            node.getLocalPosition();
+            Vector3 position = node.getLocalPosition();
+            jBulletController.updateCylinderLocation(
+                new Vector3f(position.x, position.y, position.z));
         }
     }
 
@@ -309,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements Node.TransformCha
         Color ballColor = new Color(android.graphics.Color.RED);
         MaterialFactory.makeOpaqueWithColor(this, ballColor)
             .thenAccept(material -> {
-                Vector3 startPosition = new Vector3(0, 0, -0.5f);
+                Vector3 startPosition = new Vector3(0, 0, 0.5f + WIDTH);
                 ModelRenderable renderable = ShapeFactory.makeCylinder(
                     WIDTH,
                     WIDTH,
@@ -321,6 +324,10 @@ public class MainActivity extends AppCompatActivity implements Node.TransformCha
                 cylinderNode.addTransformChangedListener(this);
                 cylinderNode.getScaleController().setEnabled(false);
                 cylinderNode.getRotationController().setEnabled(false);
+                EnumSet<Plane.Type> allowedPlaneTypes =
+                        EnumSet.of(Plane.Type.HORIZONTAL_UPWARD_FACING,
+                                Plane.Type.HORIZONTAL_DOWNWARD_FACING);
+                cylinderNode.getTranslationController().setAllowedPlaneTypes(allowedPlaneTypes);
                 cylinderNode.setParent(anchorNode);
                 cylinderNode.setRenderable(renderable);
                 cylinderNode.setLocalPosition(startPosition);
@@ -333,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements Node.TransformCha
             });
     }
 
-    private void addObject(boolean isHurdle, ImageView iconButton) {
+    private void addObjects(boolean isHurdle, ImageView iconButton) {
         if (isHurdle && appState == AppState.INITIAL) {
             String text = getString(R.string.tower_before_hurdle);
             Snackbar.make(findViewById(android.R.id.content),
@@ -455,10 +462,10 @@ public class MainActivity extends AppCompatActivity implements Node.TransformCha
         });
 
         ImageView pantheonIcon = findViewById(R.id.pantheonIcon);
-        pantheonIcon.setOnClickListener(view -> addObject(false, pantheonIcon));
+        pantheonIcon.setOnClickListener(view -> addObjects(false, pantheonIcon));
 
         ImageView aimIcon = findViewById(R.id.aimIcon);
-        aimIcon.setOnClickListener(view -> addObject(true, null));
+        aimIcon.setOnClickListener(view -> addObjects(true, null));
 
         ImageView step1Icon = findViewById(R.id.step1Icon);
         if (simulationScenario == SimulationScenario.PlankTower) {
