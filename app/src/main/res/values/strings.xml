@@ -30,7 +30,8 @@
     <string name="already_clean_scene">The scene is already clean.</string>
     <string name="settings_only_while_initial">Settings cannot be changed once simulation is started. Clear the scene with the leftmost icon.</string>
     <string name="quick_help">Quick Help</string>
-    <string name="how_to_play">Leftmost icon clears the scene of any previous simulations. The cog icon allows simulation parameter tuning. The building icon places a wooden plank structure to the crosshair center. The rightmost icon hurdles a ball towards the corsshair center.</string>
+    <string name="how_to_play_tower">Leftmost icon clears the scene of any previous simulations. The cog icon allows simulation parameter tuning. The building icon places a wooden plank structure to the crosshair center. The rightmost icon hurdles a ball towards the corsshair center.</string>
+    <string name="how_to_play_box">Leftmost icon clears the scene of any previous simulations. The cog icon allows simulation parameter tuning. The building icon places wooden planks and a red cylinder inside an invisible collision box. After that you can tap on the red cylinder and move it around. The rightmost icon displays help about moving the cylinder around.</string>
     <string name="tower_before_hurdle">Place a tower first before hurdling a ball</string>
     <string name="tower_after_initial">Please clear the scene before trying to place structure again.</string>
     <string name="aim_at_the_tower">Try to aim at the tower</string>
@@ -38,4 +39,6 @@
     <string name="chooser">Choose simulation:</string>
     <string name="plank_tower">Plank tower simulation: place a plank tower structure and then hurdle a ball at it</string>
     <string name="collision_box">Collision box simulation: move around a cylinder to stir planks in a collision box</string>
+    <string name="move_the_cylinder">Tap on the red cylinder on the screen and move it around</string>
+    <string name="box_before_yanking">Place planks and the cylinder first</string>
 </resources>

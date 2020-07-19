@@ -444,7 +444,9 @@ public class MainActivity extends AppCompatActivity implements Node.TransformCha
 
     private void displayHelp() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.InfoDialogStyle);
-        builder.setMessage(getString(R.string.how_to_play))
+        int resId = simulationScenario == SimulationScenario.PlankTower ?
+                R.string.how_to_play_tower : R.string.how_to_play_box;
+        builder.setMessage(getString(resId))
                 .setTitle(getString(R.string.quick_help))
                 .setPositiveButton("OK", null);
         AlertDialog dialog = builder.create();
@@ -471,21 +473,21 @@ public class MainActivity extends AppCompatActivity implements Node.TransformCha
         pantheonIcon.setOnClickListener(view -> addObjects(false, pantheonIcon));
 
         ImageView aimIcon = findViewById(R.id.aimIcon);
-        aimIcon.setOnClickListener(view -> addObjects(true, null));
+        aimIcon.setOnClickListener(view -> {
+            if (simulationScenario == SimulationScenario.PlankTower) {
+                addObjects(true, null);
+            } else {
+                String text = getString(appState == AppState.INITIAL ?
+                        R.string.box_before_yanking : R.string.move_the_cylinder);
+                Snackbar.make(findViewById(android.R.id.content),
+                        text, Snackbar.LENGTH_SHORT).show();
+            }
+        });
 
         ImageView step1Icon = findViewById(R.id.step1Icon);
-        if (simulationScenario == SimulationScenario.PlankTower) {
-            step1Icon.setOnClickListener(view -> displayHelp());
-        } else {
-            step1Icon.setVisibility(View.GONE);
-        }
+        step1Icon.setOnClickListener(view -> displayHelp());
 
         ImageView step2Icon = findViewById(R.id.step2Icon);
-        if (simulationScenario == SimulationScenario.PlankTower) {
-            step2Icon.setOnClickListener(view -> displayHelp());
-        } else {
-            step2Icon.setVisibility(View.GONE);
-            aimIcon.setVisibility(View.GONE);
-        }
+        step2Icon.setOnClickListener(view -> displayHelp());
     }
 }
