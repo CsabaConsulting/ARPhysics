@@ -263,6 +263,10 @@ public class JBulletController {
         position.y - elementTransform.origin.y,
         position.z - elementTransform.origin.z
     );
+    if (Math.abs(translation.x) < 1e-6 && Math.abs(translation.y) < 1e-6 && Math.abs(translation.z) < 1e-6) {
+      return;
+    }
+    Log.d(TAG, String.format("tr %f %f %f", translation.x, translation.y, translation.z));
     elementTransform.transform(translation);
     motionState.setWorldTransform(elementTransform);
     cylinderRB.setMotionState(motionState);
