@@ -310,6 +310,8 @@ public class MainActivity extends AppCompatActivity {
                 );
 
                 TransformableNode node = new TransformableNode(fragment.getTransformationSystem());
+                node.getScaleController().setEnabled(false);
+                node.getRotationController().setEnabled(false);
                 node.setParent(anchorNode);
                 node.setRenderable(renderable);
                 node.setLocalPosition(startPosition);
