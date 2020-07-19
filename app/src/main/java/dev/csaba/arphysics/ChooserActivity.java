@@ -7,7 +7,7 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class ChooserActivity extends AppCompatActivity {
-    public static final String SIMULATION_TYPE = "simulation_type";
+    public static final String SIMULATION_SCENARIO = "simulation_scenario";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,14 +17,14 @@ public class ChooserActivity extends AppCompatActivity {
         Button towerChoiceButton = findViewById(R.id.tower_choice);
         towerChoiceButton.setOnClickListener(view -> {
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra(SIMULATION_TYPE, SimulationScenario.PlankTower);
+            intent.putExtra(SIMULATION_SCENARIO, SimulationScenario.PlankTower);
             startActivity(intent);
         });
 
         Button collisionBoxChoiceButton = findViewById(R.id.collision_box_choice);
         collisionBoxChoiceButton.setOnClickListener(view -> {
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra(SIMULATION_TYPE, SimulationScenario.CollisionBox);
+            intent.putExtra(SIMULATION_SCENARIO, SimulationScenario.CollisionBox);
             startActivity(intent);
         });
     }

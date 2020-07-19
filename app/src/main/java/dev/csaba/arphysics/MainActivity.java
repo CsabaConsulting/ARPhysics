@@ -112,8 +112,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         Intent startingIntent = getIntent();
-        simulationScenario = SimulationScenario.valueOf(
-                startingIntent.getStringExtra(ChooserActivity.SIMULATION_TYPE));
+        simulationScenario = (SimulationScenario)startingIntent.getSerializableExtra(ChooserActivity.SIMULATION_SCENARIO);
 
         initializeGallery();
     }
