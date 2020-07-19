@@ -29,6 +29,7 @@ import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.Sun;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Color;
+import com.google.ar.sceneform.rendering.Material;
 import com.google.ar.sceneform.rendering.MaterialFactory;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.ShapeFactory;
@@ -61,16 +62,16 @@ public class MainActivity extends AppCompatActivity {
 
     private JBulletController jBulletController;
     private AppState appState = AppState.INITIAL;
-    private String simulationType = ChooserActivity.SIMULATION_PLANK_TOWER;
+    private SimulationScenario simulationScenario = SimulationScenario.PlankTower;
 
     ModelParameters getModelParameters() {
         SharedPreferences preferences =
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         int gravityInt = preferences.getInt("gravity", 100);
-        int slabRestitutionInt = preferences.getInt("slab_restitution", 0);
-        int slabFrictionInt = preferences.getInt("slab_friction", 100);
-        int slabDensityInt = preferences.getInt("slab_density", 50);
+        int plankRestitutionInt = preferences.getInt("plank_restitution", 0);
+        int plankFrictionInt = preferences.getInt("plank_friction", 100);
+        int plankDensityInt = preferences.getInt("plank_density", 50);
         int ballRestitutionInt = preferences.getInt("ball_restitution", 0);
         int ballFrictionInt = preferences.getInt("ball_friction", 50);
         int ballDensityInt = preferences.getInt("ball_density", 80);
@@ -80,9 +81,9 @@ public class MainActivity extends AppCompatActivity {
         return new ModelParameters(
             numFloors,
             gravityInt / 10.0f,
-            slabRestitutionInt / 100.0f,
-            slabFrictionInt / 100.0f,
-            slabDensityInt * 10.0f,
+            plankRestitutionInt / 100.0f,
+            plankFrictionInt / 100.0f,
+            plankDensityInt * 10.0f,
             ballRestitutionInt / 100.0f,
             ballFrictionInt / 100.0f,
             ballDensityInt * 100.0f,
@@ -110,7 +111,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         Intent startingIntent = getIntent();
-        simulationType = startingIntent.getStringExtra(ChooserActivity.SIMULATION_TYPE);
+        simulationScenario = SimulationScenario.valueOf(
+                startingIntent.getStringExtra(ChooserActivity.SIMULATION_TYPE));
 
         initializeGallery();
     }
@@ -174,45 +176,84 @@ public class MainActivity extends AppCompatActivity {
         return new Point(vw.getWidth() / 2, vw.getHeight() / 2);
     }
 
-    private void buildTower(ArSceneView arSceneView, Anchor anchor) {
+    private void buildTower(Material material, AnchorNode anchorNode) {
+        int numFloors = getModelParameters().getNumFloors();
+        for (int i = 0; i < numFloors; i++) {
+            boolean even = i % 2 == 0;
+            for (int j = -1; j <= 1; j += 2) {
+                Vector3 box = new Vector3(even ? WIDTH : DEPTH, HEIGHT, even ? DEPTH: WIDTH);
+                ModelRenderable renderable = ShapeFactory.makeCube(
+                    box,
+                    new Vector3(0.0f, 0.0f, 0.0f),
+                    material
+                );
+
+                Node node = new Node();
+                node.setParent(anchorNode);
+                node.setRenderable(renderable);
+                float displacement = (WIDTH - 2 * DEPTH) / 2 * j;
+                float margin = CONVEX_MARGIN;
+                Vector3 pos = new Vector3(
+                    even ? 0.0f : displacement,
+                    margin + (HEIGHT + margin) * i,
+                    even ? displacement : 0.0f
+                );
+                node.setLocalPosition(pos);
+
+                int index = i * 2 + (j < 0 ? 0 : 1);
+                jBulletController.addPlankRigidBody(
+                    index,
+                    node,
+                    new Vector3f(box.x / 2, box.y / 2, box.z / 2),
+                    new Vector3f(pos.x, pos.y, pos.z)
+                );
+            }
+        }
+    }
+
+    private void buildPlankMatrix(Material material, AnchorNode anchorNode) {
+        int numFloors = getModelParameters().getNumFloors();
+        int numPlanks = numFloors * numFloors;
+        float spacing = 1.0f / (numFloors + 1);
+        for (int i = 0; i < numPlanks; i++) {
+            Vector3 box = new Vector3(HEIGHT, WIDTH, HEIGHT);
+            ModelRenderable renderable = ShapeFactory.makeCube(
+                box,
+                new Vector3(0.0f, 0.0f, 0.0f),
+                material
+            );
+
+            Node node = new Node();
+            node.setParent(anchorNode);
+            node.setRenderable(renderable);
+            int xIndex = i % numFloors + 1;
+            int zIndex = i / numFloors + 1;
+            float xPos = xIndex * spacing - 0.5f;
+            float zPos = zIndex * spacing - 0.5f;
+            Vector3 pos = new Vector3(xPos, CONVEX_MARGIN, zPos);
+            node.setLocalPosition(pos);
+
+            jBulletController.addPlankRigidBody(
+                i,
+                node,
+                new Vector3f(box.x / 2, box.y / 2, box.z / 2),
+                new Vector3f(pos.x, pos.y, pos.z)
+            );
+        }
+    }
+
+    private void spawnStructure(ArSceneView arSceneView, Anchor anchor) {
         AnchorNode anchorNode = new AnchorNode(anchor);
         Scene scene = arSceneView.getScene();
         anchorNode.setParent(scene);
 
-        Color slabColor = new Color(0xFF593C1F);  // Brown RGB: 89, 60, 31
-        MaterialFactory.makeOpaqueWithColor(this, slabColor)
+        Color plankColor = new Color(0xFF593C1F);  // Brown RGB: 89, 60, 31
+        MaterialFactory.makeOpaqueWithColor(this, plankColor)
                 .thenAccept(material -> {
-            int numFloors = getModelParameters().getNumFloors();
-            for (int i = 0; i < numFloors; i++) {
-                boolean even = i % 2 == 0;
-                for (int j = -1; j <= 1; j += 2) {
-                    Vector3 box = new Vector3(even ? WIDTH : DEPTH, HEIGHT, even ? DEPTH: WIDTH);
-                    ModelRenderable renderable = ShapeFactory.makeCube(
-                        box,
-                        new Vector3(0.0f, 0.0f, 0.0f),
-                        material
-                    );
-
-                    Node node = new Node();
-                    node.setParent(anchorNode);
-                    node.setRenderable(renderable);
-                    float displacement = (WIDTH - 2 * DEPTH) / 2 * j;
-                    float margin = CONVEX_MARGIN;
-                    Vector3 pos = new Vector3(
-                        even ? 0.0f : displacement,
-                        margin + (HEIGHT + margin) * i,
-                        even ? displacement : 0.0f
-                    );
-                    node.setLocalPosition(pos);
-
-                    int index = i * 2 + (j < 0 ? 0 : 1);
-                    jBulletController.addSlabRigidBody(
-                        index,
-                        node,
-                        new Vector3f(box.x / 2, box.y / 2, box.z / 2),
-                        new Vector3f(pos.x, pos.y, pos.z)
-                    );
-                }
+            if (simulationScenario == SimulationScenario.PlankTower) {
+                buildTower(material, anchorNode);
+            } else {
+                buildPlankMatrix(material, anchorNode);
             }
             appState = AppState.TOWER_PLACED;
         });
@@ -252,6 +293,35 @@ public class MainActivity extends AppCompatActivity {
             });
     }
 
+    private void addCollisionBoxAndCylinder(ArSceneView arSceneView, Anchor anchor) {
+        AnchorNode anchorNode = new AnchorNode(anchor);
+        Scene scene = arSceneView.getScene();
+        anchorNode.setParent(scene);
+
+        Color ballColor = new Color(android.graphics.Color.RED);
+        MaterialFactory.makeOpaqueWithColor(this, ballColor)
+            .thenAccept(material -> {
+                Vector3 startPosition = new Vector3(0, 0, -0.5f);
+                ModelRenderable renderable = ShapeFactory.makeCylinder(
+                    WIDTH,
+                    WIDTH,
+                    startPosition,
+                    material
+                );
+
+                Node node = new Node();
+                node.setParent(anchorNode);
+                node.setRenderable(renderable);
+                node.setLocalPosition(startPosition);
+
+                jBulletController.addCylinderKineticBody(
+                    node,
+                    new Vector3f(startPosition.x, startPosition.y, startPosition.z)
+                );
+                appState = AppState.BALL_HURDLED;
+            });
+    }
+
     private void addObject(boolean isHurdle, ImageView iconButton) {
         if (isHurdle && appState == AppState.INITIAL) {
             String text = getString(R.string.tower_before_hurdle);
@@ -283,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
                         hitAnchor = hit.createAnchor();
                     }
                     catch (FatalException ex) {
-                        Log.d(TAG, "Unexpected error while trying to create anchor for the tower");
+                        Log.d(TAG, "Unexpected error while trying to create anchor for the structure");
                     }
                     if (hitAnchor != null) {
                         found = true;
@@ -292,9 +362,19 @@ public class MainActivity extends AppCompatActivity {
                             Vector3 ourPosition = new Vector3(hitTranslation[0], hitTranslation[1], hitTranslation[2]);
                             hurdleBall(new Vector3(0, 0, 0), ourPosition, arSceneView, hitAnchor);
                         } else {
-                            jBulletController = new JBulletController(getModelParameters());
+                            jBulletController = new JBulletController(getModelParameters(), simulationScenario);
                             iconButton.setEnabled(false);
-                            buildTower(arSceneView, hitAnchor);
+                            spawnStructure(arSceneView, hitAnchor);
+                            if (simulationScenario == SimulationScenario.CollisionBox) {
+                                Anchor boxAnchor = null;
+                                try {
+                                    boxAnchor = hit.createAnchor();
+                                }
+                                catch (FatalException ex) {
+                                    Log.d(TAG, "Unexpected error while trying to create cylinder");
+                                }
+                                addCollisionBoxAndCylinder(arSceneView, boxAnchor);
+                            }
                             iconButton.setEnabled(true);
                         }
                     }
@@ -370,14 +450,14 @@ public class MainActivity extends AppCompatActivity {
         aimIcon.setOnClickListener(view -> addObject(true, null));
 
         ImageView step1Icon = findViewById(R.id.step1Icon);
-        if (simulationType.equals(ChooserActivity.SIMULATION_PLANK_TOWER)) {
+        if (simulationScenario == SimulationScenario.PlankTower) {
             step1Icon.setOnClickListener(view -> displayHelp());
         } else {
             step1Icon.setVisibility(View.GONE);
         }
 
         ImageView step2Icon = findViewById(R.id.step2Icon);
-        if (simulationType.equals(ChooserActivity.SIMULATION_PLANK_TOWER)) {
+        if (simulationScenario == SimulationScenario.PlankTower) {
             step2Icon.setOnClickListener(view -> displayHelp());
         } else {
             step2Icon.setVisibility(View.GONE);

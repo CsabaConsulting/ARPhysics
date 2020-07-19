@@ -4,15 +4,18 @@ import android.util.Log;
 
 import com.bulletphysics.collision.broadphase.DbvtBroadphase;
 import com.bulletphysics.collision.dispatch.CollisionDispatcher;
+import com.bulletphysics.collision.dispatch.CollisionFlags;
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
 import com.bulletphysics.collision.shapes.BoxShape;
 import com.bulletphysics.collision.shapes.CollisionShape;
+import com.bulletphysics.collision.shapes.CylinderShape;
 import com.bulletphysics.collision.shapes.SphereShape;
 import com.bulletphysics.collision.shapes.StaticPlaneShape;
 import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
+import com.bulletphysics.dynamics.character.KinematicCharacterController;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
@@ -26,6 +29,7 @@ import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
 import dev.csaba.arphysics.ModelParameters;
+import dev.csaba.arphysics.SimulationScenario;
 
 
 public class JBulletController {
@@ -36,15 +40,20 @@ public class JBulletController {
   private DiscreteDynamicsWorld dynamicsWorld;
   private RigidBody ballRB;
   private Node ballNode;
-  private RigidBody[] slabRBs;
-  private Node[] slabNodes;
+  private RigidBody cylinderRB;
+  private Node cylinderNode;
+  private RigidBody[] plankRBs;
+  private Node[] plankNodes;
   private long previousTime;
   private int slowMotion;
   private Vector3f zeroVector;
+  private SimulationScenario simulationScenario;
+  private int plankCount;
 
-  public JBulletController(ModelParameters modelParameters) {
+  public JBulletController(ModelParameters modelParameters, SimulationScenario simulationScenario) {
     this.modelParameters = modelParameters;
     this.slowMotion = modelParameters.getSlowMotion();
+    this.simulationScenario = simulationScenario;
     initialize();
   }
 
@@ -64,8 +73,11 @@ public class JBulletController {
 
     addGroundPlane();
 
-    slabRBs = new RigidBody[modelParameters.getNumFloors() * 2];
-    slabNodes = new Node[modelParameters.getNumFloors() * 2];
+    int plankCountMultiplier = simulationScenario == SimulationScenario.PlankTower ? 2 :
+            modelParameters.getNumFloors();
+    plankCount = modelParameters.getNumFloors() * plankCountMultiplier;
+    plankRBs = new RigidBody[plankCount];
+    plankNodes = new Node[plankCount];
   }
 
   public void addBallRigidBody(Node ballNode, Vector3f ballPosition, Vector3f velocity) {
@@ -94,6 +106,52 @@ public class JBulletController {
     previousTime = java.lang.System.currentTimeMillis();
   }
 
+  private void addCollisionBoxWall(Vector3f normal, Vector3f position) {
+    CollisionShape wallShape = new StaticPlaneShape(
+            new Vector3f(normal.x, normal.y, normal.z), 0);
+    wallShape.setMargin(modelParameters.getConvexMargin());
+
+    Transform wallTransform = new Transform();
+    wallTransform.setIdentity();
+    wallTransform.origin.set(position.x, position.y, position.z);
+
+    DefaultMotionState wallMotionState = new DefaultMotionState(wallTransform);
+    RigidBodyConstructionInfo wallRBInfo = new RigidBodyConstructionInfo(
+            0.0f, wallMotionState, wallShape, zeroVector);
+    wallRBInfo.friction = 0.6f;
+    RigidBody wallRB = new RigidBody(wallRBInfo);
+    dynamicsWorld.addRigidBody(wallRB);
+  }
+
+  public void addCylinderKineticBody(Node cylinderNode, Vector3f cylinderPosition) {
+    this.cylinderNode = cylinderNode;
+    float r = modelParameters.getWidth();
+    CollisionShape cylinderShape = new CylinderShape(new Vector3f(r, r, r));
+
+    Transform cylinderTransform = new Transform();
+    cylinderTransform.setIdentity();
+    cylinderTransform.origin.set(cylinderPosition);
+
+    DefaultMotionState cylinderMotionState = new DefaultMotionState(cylinderTransform);
+    // https://pybullet.org/Bullet/phpBB3/viewtopic.php?t=7086
+    // Kinematic Object's mass is 0.0
+    RigidBodyConstructionInfo cylinderRBInfo = new RigidBodyConstructionInfo(
+        100000, cylinderMotionState, cylinderShape, zeroVector);
+    cylinderRBInfo.restitution = modelParameters.getBallRestitution();
+    cylinderRBInfo.friction = modelParameters.getBallFriction();
+
+    cylinderRB = new RigidBody(cylinderRBInfo);
+    cylinderRB.setCollisionFlags(CollisionFlags.KINEMATIC_OBJECT);
+    cylinderRB.setActivationState(CollisionObject.DISABLE_DEACTIVATION);
+    dynamicsWorld.addRigidBody(cylinderRB);
+
+    addCollisionBoxWall(new Vector3f(0.5f, 0, 0), new Vector3f(-0.5f, 0, 0));
+    addCollisionBoxWall(new Vector3f(0, 0, 0.5f), new Vector3f(0, 0, -0.5f));
+    addCollisionBoxWall(new Vector3f(-0.5f, 0, 0), new Vector3f(0.5f, 0, 0));
+    addCollisionBoxWall(new Vector3f(0, 0, -0.5f), new Vector3f(0, 0, 0.5f));
+    // previousTime = java.lang.System.currentTimeMillis();
+  }
+
   public void addGroundPlane() {
     CollisionShape groundShape = new StaticPlaneShape(
       new Vector3f(0, 1.0f, 0), 0);
@@ -111,50 +169,50 @@ public class JBulletController {
     dynamicsWorld.addRigidBody(groundRB);
   }
 
-  public void addSlabRigidBody(int index, Node slabNode, Vector3f slabBox, Vector3f slabPosition) {
-    this.slabNodes[index] = slabNode;
+  public void addPlankRigidBody(int index, Node plankNode, Vector3f plankBox, Vector3f plankPosition) {
+    this.plankNodes[index] = plankNode;
     float margin = modelParameters.getConvexMargin();
     float marginShrink = 0.0f;  // margin;
     float doubleMargin = marginShrink * 2;
     // We need to shrink the box with the margin, so
-    // the slabs would touch and would not float on each other.
+    // the planks would touch and would not float on each other.
     // This has to be reversed in updatePhysics.
-    Vector3f compensatedSlabBox = new Vector3f(
-      slabBox.x - doubleMargin,
-      slabBox.y - doubleMargin,
-      slabBox.z - doubleMargin
+    Vector3f compensatedPlankBox = new Vector3f(
+      plankBox.x - doubleMargin,
+      plankBox.y - doubleMargin,
+      plankBox.z - doubleMargin
     );
-    CollisionShape slabShape = new BoxShape(compensatedSlabBox);
-    slabShape.setMargin(margin);
+    CollisionShape plankShape = new BoxShape(compensatedPlankBox);
+    plankShape.setMargin(margin);
 
-    Transform slabTransform = new Transform();
-    slabTransform.setIdentity();
-    // We need to compensate the position due to the SlabBox shrink.
+    Transform plankTransform = new Transform();
+    plankTransform.setIdentity();
+    // We need to compensate the position due to the PlankBox shrink.
     // This has to be reversed in updatePhysics.
-    Vector3f compensatedSlabPosition = new Vector3f(
-      slabPosition.x + marginShrink,
-      slabPosition.y + marginShrink,
-      slabPosition.z + marginShrink
+    Vector3f compensatedPlankPosition = new Vector3f(
+      plankPosition.x + marginShrink,
+      plankPosition.y + marginShrink,
+      plankPosition.z + marginShrink
     );
-    slabTransform.origin.set(compensatedSlabPosition);
+    plankTransform.origin.set(compensatedPlankPosition);
 
-    DefaultMotionState slabMotionState = new DefaultMotionState(slabTransform);
-    float mass = modelParameters.getSlabDensity() * slabBox.x * slabBox.y * slabBox.z;
-    slabShape.calculateLocalInertia(mass, zeroVector);
-    RigidBodyConstructionInfo slabRBInfo = new RigidBodyConstructionInfo(
-        mass, slabMotionState, slabShape, zeroVector);
-    slabRBInfo.restitution = modelParameters.getBallRestitution();
-    slabRBInfo.friction = modelParameters.getBallFriction();
+    DefaultMotionState plankMotionState = new DefaultMotionState(plankTransform);
+    float mass = modelParameters.getPlankDensity() * plankBox.x * plankBox.y * plankBox.z;
+    plankShape.calculateLocalInertia(mass, zeroVector);
+    RigidBodyConstructionInfo plankRBInfo = new RigidBodyConstructionInfo(
+        mass, plankMotionState, plankShape, zeroVector);
+    plankRBInfo.restitution = modelParameters.getBallRestitution();
+    plankRBInfo.friction = modelParameters.getBallFriction();
 
-    RigidBody slabRB = new RigidBody(slabRBInfo);
-    // slabRB.setActivationState(DISABLE_DEACTIVATION);
-    slabRB.setSleepingThresholds(0.8f, 1.0f);
-    slabRBs[index] = slabRB;
+    RigidBody plankRB = new RigidBody(plankRBInfo);
+    // plankRB.setActivationState(DISABLE_DEACTIVATION);
+    plankRB.setSleepingThresholds(0.8f, 1.0f);
+    plankRBs[index] = plankRB;
 
-    dynamicsWorld.addRigidBody(slabRB);
+    dynamicsWorld.addRigidBody(plankRB);
 
     /*
-    if (index == modelParameters.getNumFloors() * 2 - 1) {
+    if (index == plankCount - 1) {
       previousTime = java.lang.System.currentTimeMillis();
     }
     */
@@ -214,14 +272,14 @@ public class JBulletController {
       ballNode.setLocalRotation(new Quaternion(pose.qx(), pose.qy(), pose.qz(), pose.qw()));
     }
 
-    // Update the slabs
-    int slabCount = slabRBs.length;
-    for (int index = 0; index < slabCount; index++) {
-      Node slabNode = slabNodes[index];
-      if (slabNode != null) {
-        Pose pose = getElementPose(slabRBs[index]);
-        slabNode.setLocalPosition(new Vector3(pose.tx(), pose.ty(), pose.tz()));
-        slabNode.setLocalRotation(new Quaternion(pose.qx(), pose.qy(), pose.qz(), pose.qw()));
+    // Update the planks
+    int plankCount = plankRBs.length;
+    for (int index = 0; index < plankCount; index++) {
+      Node plankNode = plankNodes[index];
+      if (plankNode != null) {
+        Pose pose = getElementPose(plankRBs[index]);
+        plankNode.setLocalPosition(new Vector3(pose.tx(), pose.ty(), pose.tz()));
+        plankNode.setLocalRotation(new Quaternion(pose.qx(), pose.qy(), pose.qz(), pose.qw()));
       }
     }
 
@@ -232,10 +290,10 @@ public class JBulletController {
     ballNode = null;
     dynamicsWorld.removeRigidBody(ballRB);
 
-    int slabCount = slabRBs.length;
-    for (int index = 0; index < slabCount; index++) {
-      slabNodes[index] = null;
-      dynamicsWorld.removeRigidBody(slabRBs[index]);
+    int plankCount = plankRBs.length;
+    for (int index = 0; index < plankCount; index++) {
+      plankNodes[index] = null;
+      dynamicsWorld.removeRigidBody(plankRBs[index]);
     }
   }
 
