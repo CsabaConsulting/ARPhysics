@@ -319,7 +319,12 @@ public class JBulletController {
 
   public void clearScene() {
     ballNode = null;
-    dynamicsWorld.removeRigidBody(ballRB);
+    if (ballRB != null) {
+      dynamicsWorld.removeRigidBody(ballRB);
+    }
+    if (cylinderRB != null) {
+      dynamicsWorld.removeRigidBody(cylinderRB);
+    }
 
     int plankCount = plankRBs.length;
     for (int index = 0; index < plankCount; index++) {
