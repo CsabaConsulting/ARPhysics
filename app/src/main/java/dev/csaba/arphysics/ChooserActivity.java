@@ -8,8 +8,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ChooserActivity extends AppCompatActivity {
     public static final String SIMULATION_TYPE = "simulation_type";
-    public static final String SIMULATION_PLANK_TOWER = "plank_tower";
-    public static final String SIMULATION_COLLISION_BOX = "collision_box";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,14 +17,14 @@ public class ChooserActivity extends AppCompatActivity {
         Button towerChoiceButton = findViewById(R.id.tower_choice);
         towerChoiceButton.setOnClickListener(view -> {
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra(SIMULATION_TYPE, SIMULATION_PLANK_TOWER);
+            intent.putExtra(SIMULATION_TYPE, SimulationScenario.PlankTower);
             startActivity(intent);
         });
 
         Button collisionBoxChoiceButton = findViewById(R.id.collision_box_choice);
         collisionBoxChoiceButton.setOnClickListener(view -> {
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra(SIMULATION_TYPE, SIMULATION_COLLISION_BOX);
+            intent.putExtra(SIMULATION_TYPE, SimulationScenario.CollisionBox);
             startActivity(intent);
         });
     }
