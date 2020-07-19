@@ -134,12 +134,12 @@ public class JBulletController {
     // https://pybullet.org/Bullet/phpBB3/viewtopic.php?t=7086
     // Kinematic Object's mass is 0.0
     RigidBodyConstructionInfo cylinderRBInfo = new RigidBodyConstructionInfo(
-        100000, cylinderMotionState, cylinderShape, zeroVector);
+        0, cylinderMotionState, cylinderShape, zeroVector);
     cylinderRBInfo.restitution = modelParameters.getBallRestitution();
     cylinderRBInfo.friction = modelParameters.getBallFriction();
 
     cylinderRB = new RigidBody(cylinderRBInfo);
-    // cylinderRB.setCollisionFlags(CollisionFlags.KINEMATIC_OBJECT);
+    cylinderRB.setCollisionFlags(CollisionFlags.KINEMATIC_OBJECT);
     cylinderRB.setActivationState(CollisionObject.DISABLE_DEACTIVATION);
     dynamicsWorld.addRigidBody(cylinderRB);
 
@@ -244,7 +244,7 @@ public class JBulletController {
     return new Pose(translation, rotation);
   }
 
-  public void updateCylinderLocation(Vector3f position) {
+  public void updateCylinderLocation(Vector3f cylinderPosition) {
     if (cylinderRB == null) {
       return;
     }
@@ -257,18 +257,21 @@ public class JBulletController {
     MotionState motionState = cylinderRB.getMotionState();
     motionState.getWorldTransform(elementTransform);
     Vector3f translation = new Vector3f(
-        position.x - elementTransform.origin.x,
-        position.y - elementTransform.origin.y,
-        position.z - elementTransform.origin.z
+      cylinderPosition.x - elementTransform.origin.x,
+      cylinderPosition.y - elementTransform.origin.y,
+      cylinderPosition.z - elementTransform.origin.z
     );
     if (Math.abs(translation.x) < 1e-6 && Math.abs(translation.y) < 1e-6 && Math.abs(translation.z) < 1e-6) {
       return;
     }
-    Log.d(TAG, String.format("tr %f %f %f", translation.x, translation.y, translation.z));
-    elementTransform.transform(translation);
-    motionState.setWorldTransform(elementTransform);
-    cylinderRB.setWorldTransform(elementTransform);
-    cylinderRB.setMotionState(motionState);
+
+    Transform cylinderTransform = new Transform();
+    cylinderTransform.setIdentity();
+    cylinderTransform.origin.set(cylinderPosition);
+    DefaultMotionState cylinderMotionState = new DefaultMotionState(cylinderTransform);
+
+    cylinderRB.setWorldTransform(cylinderTransform);
+    cylinderRB.setMotionState(cylinderMotionState);
     cylinderRB.setLinearVelocity(new Vector3f(0, 0, 0));
     cylinderRB.setAngularVelocity(new Vector3f(0, 0, 0));
     cylinderRB.clearForces();
