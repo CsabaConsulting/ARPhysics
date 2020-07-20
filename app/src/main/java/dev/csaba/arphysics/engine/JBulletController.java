@@ -277,7 +277,7 @@ public class JBulletController {
     cylinderRB.clearForces();
   }
 
-  public void updatePhysics() {
+  public void updatePhysics(Vector3f cylinderPosition) {
     // Approximately called with 30 FPS in my tests
     if (previousTime <= 0) {
       return;
@@ -295,6 +295,9 @@ public class JBulletController {
     // stepSimulation takes deltaTime in the unit of seconds
     dynamicsWorld.stepSimulation(timeDeltaMillis / 1000.0f);
     previousTime = currentTime;
+
+    // Trying to make sure the cylinder is not resetted back to dead center
+    updateCylinderLocation(cylinderPosition);
 
     // Update the ball
     if (ballNode != null) {

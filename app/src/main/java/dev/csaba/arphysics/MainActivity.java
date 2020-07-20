@@ -123,7 +123,12 @@ public class MainActivity extends AppCompatActivity implements Node.TransformCha
         boolean trackingChanged = updateTracking();
 
         if (jBulletController != null && appState != AppState.INITIAL) {
-            jBulletController.updatePhysics();
+            Vector3f cylinderPosition = null;
+            if (simulationScenario == SimulationScenario.CollisionBox) {
+                Vector3 position = cylinderNode.getLocalPosition();
+                cylinderPosition = new Vector3f(position.x, position.y, position.z);
+            }
+            jBulletController.updatePhysics(cylinderPosition);
         }
 
         View contentView = findViewById(android.R.id.content);
