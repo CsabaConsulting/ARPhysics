@@ -119,12 +119,17 @@ public class MainActivity extends AppCompatActivity implements Node.TransformCha
         initializeGallery();
     }
 
+    public void onDestroy() {
+        clearScene(true);
+        super.onDestroy();
+    }
+
     private void onUpdate() {
         boolean trackingChanged = updateTracking();
 
         if (jBulletController != null && appState != AppState.INITIAL) {
             Vector3f cylinderPosition = null;
-            if (simulationScenario == SimulationScenario.CollisionBox) {
+            if (simulationScenario == SimulationScenario.CollisionBox && cylinderNode != null) {
                 Vector3 position = cylinderNode.getLocalPosition();
                 cylinderPosition = new Vector3f(position.x, position.y, position.z);
             }
@@ -302,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements Node.TransformCha
 
     @Override
     public void onTransformChanged(Node node, Node originatingNode) {
-        if (node == cylinderNode) {
+        if (cylinderNode != null && jBulletController != null && node == cylinderNode) {
             Vector3 position = node.getLocalPosition();
             jBulletController.updateCylinderLocation(
                 new Vector3f(position.x, position.y, position.z));
@@ -417,16 +422,22 @@ public class MainActivity extends AppCompatActivity implements Node.TransformCha
         }
     }
 
-    private void clearScene() {
+    private void clearScene(boolean silent) {
         if (appState == AppState.INITIAL) {
-            String text = getString(R.string.already_clean_scene);
-            Snackbar.make(findViewById(android.R.id.content),
-                    text, Snackbar.LENGTH_SHORT).show();
+            if (!silent) {
+                String text = getString(R.string.already_clean_scene);
+                Snackbar.make(findViewById(android.R.id.content),
+                        text, Snackbar.LENGTH_SHORT).show();
+            }
 
             return;
         }
 
         appState = AppState.INITIAL;
+        if (simulationScenario == SimulationScenario.CollisionBox) {
+            cylinderNode.removeTransformChangedListener(this);
+            cylinderNode = null;
+        }
         jBulletController.clearScene();
         jBulletController = null;
         // Clear the SceneForm scene
@@ -460,7 +471,7 @@ public class MainActivity extends AppCompatActivity implements Node.TransformCha
 
     private void initializeGallery() {
         ImageView restartIcon = findViewById(R.id.restartIcon);
-        restartIcon.setOnClickListener(view -> clearScene());
+        restartIcon.setOnClickListener(view -> clearScene(false));
 
         ImageView settingsIcon = findViewById(R.id.settingsIcon);
         settingsIcon.setOnClickListener(view -> {
