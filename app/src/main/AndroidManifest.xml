@@ -36,7 +36,7 @@
             android:name=".SettingsActivity"
             android:label="@string/app_name">
             <intent-filter>
-                <action android:name=".Preferences" />
+                <action android:name="android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS" />
                 <category android:name="android.intent.category.PREFERENCE" />
             </intent-filter>
         </activity>
