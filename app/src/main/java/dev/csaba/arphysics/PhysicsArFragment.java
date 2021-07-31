@@ -47,21 +47,9 @@ public class PhysicsArFragment extends ArFragment {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
         // Turn off the plane discovery since we're only looking for images
-        getPlaneDiscoveryController().hide();
-        getPlaneDiscoveryController().setInstructionView(null);
+        getInstructionsController().setEnabled(false);
+        getInstructionsController().setVisible(false);
         getArSceneView().getPlaneRenderer().setEnabled(false);
         return view;
-    }
-
-    @Override
-    protected Config getSessionConfiguration(Session session) {
-        Config config = super.getSessionConfiguration(session);
-
-        // Use setFocusMode to configure auto-focus.
-        config.setFocusMode(Config.FocusMode.AUTO);
-
-        // config.setLightEstimationMode(Config.LightEstimationMode.DISABLED);
-
-        return config;
     }
 }
