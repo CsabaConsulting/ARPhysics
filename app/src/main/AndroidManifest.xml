@@ -17,8 +17,8 @@
 
         <activity
             android:name=".ChooserActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.ActionBar">
+            android:theme="@style/AppTheme.ActionBar"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,13 +28,12 @@
 
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/app_name">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS" />
                 <category android:name="android.intent.category.PREFERENCE" />
