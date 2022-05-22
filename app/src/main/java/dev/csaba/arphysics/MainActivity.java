@@ -26,7 +26,6 @@ import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Camera;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
-import com.google.ar.sceneform.Sun;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.Material;
@@ -442,7 +441,7 @@ public class MainActivity extends AppCompatActivity implements Node.TransformCha
         jBulletController = null;
         // Clear the SceneForm scene
         fragment.getArSceneView().getScene().callOnHierarchy(node -> {
-            if (node instanceof Camera || node instanceof Sun) {
+            if (node instanceof Camera) {
                 return;
             }
             node.setParent(null);
