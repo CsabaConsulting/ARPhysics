@@ -12,8 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.google.ar.core.Config;
-import com.google.ar.core.Session;
 import com.google.ar.sceneform.ux.ArFragment;
 
 public class PhysicsArFragment extends ArFragment {
