@@ -1,0 +1,123 @@
+{
+  "repoId": "repoId",
+  "repoName": "",
+  "repoURL": "",
+  "branchName": "master",
+  "commitId": "",
+  "customerId": "cliCustomer",
+  "scanId": null,
+  "permissionList": [
+    {
+      "category": "Device Sensor Input",
+      "element": "Camera",
+      "dataElement": null,
+      "sensitive": false,
+      "sensitivity": "low",
+      "score": 1,
+      "confidence": "high",
+      "scoringPoints": [],
+      "occurrences": [
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.CAMERA",
+          "fileName": "app/build/intermediates/packaged_manifests/release/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "        android:minSdkVersion=\"24\"\n        android:targetSdkVersion=\"29\" />\n\n    <uses-permission android:name=\"android.permission.CAMERA\" />\n\n    <uses-feature\n        android:name=\"android.hardware.camera.ar\"\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 60
+            }
+          ],
+          "startLocationLine": 11,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.CAMERA",
+          "fileName": "app/build/intermediates/packaged_manifests/debug/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "        android:minSdkVersion=\"24\"\n        android:targetSdkVersion=\"31\" />\n\n    <uses-permission android:name=\"android.permission.CAMERA\" />\n\n    <uses-feature\n        android:name=\"android.hardware.camera.ar\"\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 60
+            }
+          ],
+          "startLocationLine": 11,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.CAMERA",
+          "fileName": "app/src/main/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\">\n\n    <uses-permission android:name=\"android.permission.CAMERA\" />\n    <uses-feature android:name=\"android.hardware.camera.ar\" android:required=\"true\" />\n\n    <application\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 60
+            }
+          ],
+          "startLocationLine": 4,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.CAMERA",
+          "fileName": "app/build/intermediates/merged_manifests/debug/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "        android:minSdkVersion=\"24\"\n        android:targetSdkVersion=\"31\" />\n\n    <uses-permission android:name=\"android.permission.CAMERA\" />\n\n    <uses-feature\n        android:name=\"android.hardware.camera.ar\"\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 60
+            }
+          ],
+          "startLocationLine": 11,
+          "authorEmail": null
+        },
+        {
+          "score": 1,
+          "confidence": "high",
+          "scoringPoints": [],
+          "sample": "android.permission.CAMERA",
+          "fileName": "app/build/intermediates/bundle_manifest/release/AndroidManifest.xml",
+          "language": "app-permissions",
+          "excerpt": "        android:minSdkVersion=\"24\"\n        android:targetSdkVersion=\"29\" />\n\n    <uses-permission android:name=\"android.permission.CAMERA\" />\n\n    <uses-feature\n        android:name=\"android.hardware.camera.ar\"\n",
+          "isCorrect": null,
+          "occurrenceIndexes": [
+            {
+              "lineNumber": 3,
+              "startIndex": 35,
+              "endIndex": 60
+            }
+          ],
+          "startLocationLine": 11,
+          "authorEmail": null
+        }
+      ]
+    }
+  ],
+  "piiList": [],
+  "vendorList": [],
+  "interestsubjectList": [],
+  "created": "2022-06-15 04:29:02.431352",
+  "updated": "2022-06-15 04:29:02.431385"
+}
