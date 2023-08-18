@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.ar.sceneform.plugin'
 
 android {
+    compileSdkVersion 33
     defaultConfig {
         applicationId "dev.csaba.arphysics"
         minSdkVersion 24
