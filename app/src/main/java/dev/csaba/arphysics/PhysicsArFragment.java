@@ -45,6 +45,7 @@ public class PhysicsArFragment extends ArFragment {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
         // Turn off the plane discovery since we're only looking for images
+        // I think this was for the image activation, we may need this here!
         getInstructionsController().setEnabled(false);
         getInstructionsController().setVisible(false);
         getArSceneView().getPlaneRenderer().setEnabled(false);
